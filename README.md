@@ -59,7 +59,7 @@ fastpl 是一个高效、轻量的Javascript模板引擎，性能卓越、支持
 自定义循环，list现在是索引值，循环显示结果为0-999值。
 
       {{ for list(0,1000) }}
-        <a href="#"> ${name} </a>
+        <a href="#"> ${list} </a>
       {{/for }}
       
 ##### {{ log }}

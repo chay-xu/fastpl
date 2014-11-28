@@ -136,7 +136,7 @@
         '/for': function( args ){
             return '});'
         },
-        'echo': function( args ){
+        'log': function( args ){
             return 'console.log(' +args+ ');'
         }
     }
@@ -196,7 +196,6 @@
         // 判断是否已经缓存
         if( _cache[ tpl ] ){
             var view = _cache[ tpl ];
-            console.log(1234);
         }else{
             var view = this._compile(tpl);
             _cache[ tpl ] = view;

@@ -1,7 +1,7 @@
 ## 简要
 fastpl 是一个高效、轻量的Javascript模板引擎，性能卓越、支持预编译、语法简洁，支持所有流行的浏览器。
 
-## 使用方法
+## 快速使用
 > 数据
 
       var data = {
@@ -26,12 +26,12 @@ fastpl 是一个高效、轻量的Javascript模板引擎，性能卓越、支持
       // 快捷写法
       // var html = fasTpl( document.getElementById( 'test' ).innerHTML, data );
       
-## API
-##### 语法
+## 语法详解
+语法三种写法，方便区分逻辑和变量。
 
       逻辑语法：{{ }}
       变量名语法：${}
-      html不转义语法：$${}
+      变量值不转义语法：$${}
       
 ##### {{ if }}
 
@@ -59,7 +59,7 @@ fastpl 是一个高效、轻量的Javascript模板引擎，性能卓越、支持
 自定义循环，list现在是索引值，循环显示结果为0-999值。
 
       {{ for list(0,1000) }}
-        <a href="#"> ${name} </a>
+        <a href="#"> ${list} </a>
       {{/for }}
       
 ##### {{ log }}

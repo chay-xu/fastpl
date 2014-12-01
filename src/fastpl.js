@@ -111,15 +111,15 @@
             var str = '',
                 // temp = key ? key.substr(1) : (),
                 temp = param && param.split(',')[0];
-// console.log(result,temp)
+
             if( param && /[a-z]+/igm.test(temp) ){
                 // str = 'for(var ' + temp + ' in ' + args + '){'
                 //     + 'if(' + args + '.hasOwnProperty(' + temp + ')){'
                 //     + 'var _value=' + args +'[' +temp+ '],'
                 //     + '_index='+temp+';';
-
+console.log(temp)
                 // 参数为字母
-                str = '_each_('+ args +',0,data.length,function('+param+'){'
+                str = '_each_('+ args +',0,'+ args +'.length,function('+param+'){'
             }else if( param && /\d+/.test(temp) ){
                 // range = args.slice(1,-1).split( ',' );
                 // str = 'for (var '+ temp +' = '+range[0]+'; '+ temp +'< '+range[1]+'; '+ temp +'++) {{'
@@ -128,7 +128,7 @@
                 str = '_each_([],'+ param +',function(_value,'+args+'){'
             }else{
                 // 无参数
-                str = '_each_('+ args +',function(_value,_index){'
+                str = '_each_('+ args +',0,'+ args +'.length,function(_value,_index){'
             }
 
             return str
@@ -141,11 +141,6 @@
         }
     }
     
-// console.log(variablePattern) 
-// console.log(strList) 
-// console.log(Tpl.statement['else if'])
-
-
     Tpl.pt = Tpl.prototype;
     // 编译成string语法
     Tpl.pt._compile = function( strTpl ){

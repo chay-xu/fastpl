@@ -4,8 +4,20 @@
 	<title></title>
 	<script type="text/javascript" src="test/juicer.js"></script>
 	<script type="text/javascript" src="src/fastpl.js"></script>
+	<!--<script type="text/javascript" src="build/fastpl-min.js"></script>-->
 </head>
 <body>
+	<div>
+		<pre>
+		<code>
+var numData = {
+	skills: ["js", "html", "css",[1,2,3,4]],
+	'num':[11,12,13,14],
+	'img': 'http://www.baidu.com/img/baidu_jgylogo3.gif?v=17058940.gif&'
+}
+		</code>
+		</pre>
+	</div>
 	<div id="test"></div>
 	<script type="text/fastpl" id="tpl">
 		<div>My skills:
@@ -16,14 +28,31 @@
 		</p>
 
 		<p>
-		{{for num(v,i)}}
+		{{for skills(v,i)}}
+			{{if i==3}}
+				{{for skills[i]}}
+					<a href="#"> ${ _value } </a>
+				{{/for}}
+			{{else}}
+				<a href="#"> ${ v } </a>
+			{{/if}}
+		{{/for}}
+		</p>
+
+		<p>
+		{{for num(v,i) }}
 			<a href="#"> ${ v } </a>
 		{{/for}}
 		</p>
 
 		<p>
 		{{for num}}
-			<a href="#"> ${ _value } 我的</a>
+			<div>
+			<a href="#"> **** ${ _value }</a>
+			{{for skills}}
+				<a href="#"> ${ _value }</a>
+			{{/for}}
+			</div>
 		{{/for}}
 		</p>
 
@@ -90,7 +119,7 @@
 
 
 var data = {
-	skills: ["js", "html", "css"],
+	skills: ["js", "html", "css",[1,2,3,4]],
 	showSkills: true
 }
 function parseToDOM(str){
@@ -107,6 +136,7 @@ function append(nodeList){
 	}
 }
 var numData = {
+	skills: ["js", "html", "css",[1,2,3,4]],
 	'num':[11,12,13,14],
 	'img': 'http://www.baidu.com/img/baidu_jgylogo3.gif?v=17058940.gif&'
 }

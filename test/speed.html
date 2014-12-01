@@ -2,9 +2,11 @@
 <head>
 	<meta http-equiv="Content-type" content="text/html;charset=utf-8">
 	<title></title>
-	<script type="text/javascript" src="juicer.js"></script>
+	<script type="text/javascript" src="jquery-latest.min.js"></script>
 	<script type="text/javascript" src="../src/fastpl.js"></script>
+	<script type="text/javascript" src="juicer.js"></script>
 	<script type="text/javascript" src="artTemplate.js"></script>
+	<script type="text/javascript" src="jquery.tmpl.js"></script>
 </head>
 <body>
 	<div id="test"></div>
@@ -28,6 +30,14 @@
 		<div>My skills:
 		{{each list}}
 			<a href="#">{{$index}}</a>
+		{{/each}}
+		</div>
+	</script>
+
+	<script type="text/tmpl" id="tmpl">
+		<div>My skills:
+		{{each(i,user) list}}
+			<a href="#">${ i }</a>
 		{{/each}}
 		</div>
 	</script>
@@ -75,6 +85,14 @@ var testList = [
 		name: 'juicer',
 		test: function(){
 			var html = juicer(document.getElementById( 'ju' ).innerHTML, data);
+
+			//console.log(html);
+		}
+	},
+	{
+		name: 'jquery.tmpl',
+		test: function(){
+			var html = $.tmpl(document.getElementById( 'tmpl' ).innerHTML, data);
 
 			//console.log(html);
 		}

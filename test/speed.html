@@ -9,11 +9,17 @@
 	<script type="text/javascript" src="jquery.tmpl.js"></script>
 </head>
 <body>
+	<div>
+		<p>
+		不要盲目的追求速度，因为执行时的性能会受到影响。<br/>
+		在确保一定的性能下，更多的是方便使用的功能，采用延长作用域写法上也更宽松。
+		</p>
+	</div>
 	<div id="test"></div>
 	<script type="text/fastpl" id="tpl">
 		<div>My skills:
 		{{for list}}
-			<a href="#"> ${ _value } </a>
+			<a href="#"> ${ $value } </a>
 		{{/for}}
 		</div>
 	</script>
@@ -31,6 +37,9 @@
 		{{each list}}
 			<a href="#">{{$index}}</a>
 		{{/each}}
+		{{if showList}}
+			<span>显示</span>
+		{{/if}}
 		</div>
 	</script>
 
@@ -58,7 +67,7 @@ function append(nodeList){
 	}
 }
 
-var data = {list:[]};
+var data = {list:[],showList: true};
 for (var i = 0; i < 20000; i++) {
 	data.list.push( i );
 };
@@ -110,7 +119,10 @@ function testFun(){
 	testList[i].test();
 
 	var endTime = + new Date - startTime;
-	console.log( testList[i].name+' : ' + endTime )
+	// console.log( testList[i].name+' : ' + endTime )
+	var div = document.createElement("div");
+	div.innerHTML = testList[i].name+' : ' + endTime +'ms';
+	document.getElementsByTagName( 'body' )[0].appendChild( div );
 
 	i++;
 	if(i < len) {

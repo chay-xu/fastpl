@@ -3,6 +3,7 @@
 	<meta http-equiv="Content-type" content="text/html;charset=utf-8">
 	<title></title>
 	<script type="text/javascript" src="test/juicer.js"></script>
+	<script type="text/javascript" src="test/artTemplate.js"></script>
 	<script type="text/javascript" src="src/fastpl.js"></script>
 	<!--<script type="text/javascript" src="build/fastpl-min.js"></script>-->
 </head>
@@ -13,7 +14,12 @@
 var numData = {
 	skills: ["js", "html", "css",[1,2,3,4]],
 	'num':[11,12,13,14],
-	'img': 'http://www.baidu.com/img/baidu_jgylogo3.gif?v=17058940.gif&'
+	'img': 'http://www.baidu.com/img/baidu_jgylogo3.gif?v=17058940.gif&',
+	obj: {
+		name: 'hello',
+		age: 18
+	},
+	dateTime: '2014-12-1 14:55:23'
 }
 		</code>
 		</pre>
@@ -21,6 +27,11 @@ var numData = {
 	<div id="test"></div>
 	<script type="text/fastpl" id="tpl">
 		<div>My skills:
+
+		<p>
+			${dateTime | date_format:'yyyy-MM-dd EEE' }
+		</p>
+
 		<p>
 		{{for i(0,10)}}
 			<a href="#"> ${ i } </a>
@@ -31,7 +42,7 @@ var numData = {
 		{{for skills(v,i)}}
 			{{if i==3}}
 				{{for skills[i]}}
-					<a href="#"> ${ _value } </a>
+					<a href="#"> ${ $value } </a>
 				{{/for}}
 			{{else}}
 				<a href="#"> ${ v } </a>
@@ -46,11 +57,18 @@ var numData = {
 		</p>
 
 		<p>
+		{{for obj(v,i) }}
+		${obj|count}
+			<a href="#"> ${ i }: ${ v }  </a>
+		{{/for}}
+		</p>
+
+		<p>
 		{{for num}}
 			<div>
-			<a href="#"> **** ${ _value }</a>
+			<a href="#"> **** ${ $value }</a>
 			{{for skills}}
-				<a href="#"> ${ _value }</a>
+				<a href="#"> ${ $value }</a>
 			{{/for}}
 			</div>
 		{{/for}}
@@ -82,45 +100,43 @@ var numData = {
 
 	<script type="text/tpl" id="ju">
 		<div>My skills:
-		{@each i in range(0, 1000)}
+		{@each i in range(0, 5)}
 			<a href="#"> ${ i } </a>
+			{{@if i==3}}
+			{{@/if}}
 		{@/each}
+		{{@each obj as item}}
+			{{item.name}}
+		{{@/each}}
 		</div>
 	</script>
 
-	<script type="text/tpl" id="newtpl">
-		<div>My skills:
-		{{ if showSkills }}
-			{{for skills}}
-				<a href="#"> ${ _value } </a>
-				{{for skills}}
-					<a href="#"> ${ _value } </a>
-				{{/for}}
-			{{/for}}
-		{{/if }}
-
-		{{ if !showSkills }}
-			<p>if</p>
-		{{ else if showSkills }}
-			Second：
-			{{for skills,i}}
-				<a href="#"> ${ skills[i] } </a>
-			{{/for}}
-		{{/if }}
-
-		{{ if !showSkills }}
-			<p>if</p>
-		{{ else if showSkills != false }}
-			<p>elseif!</p>
-		{{/if }}
-		</div>
+	<script type="text/tpl" id="testtpl">
+		{{each skills as v i}}
+			{{if i==3}}
+				{{each skills[i]}}
+					<a href="#"> {{ $value }} </a>
+				{{/each}}
+			{{else}}
+				<a href="#"> {{ v }} </a>
+			{{/if}}
+		{{/each}}
+		{{each obj}}
+			{{obj.name}}
+		{{/each}}
+		{{each skills as v i}}
+			<a href="#"> {{ v }} </a>
+		{{/each}}
 	</script>
 	<script>
 
 
 var data = {
 	skills: ["js", "html", "css",[1,2,3,4]],
-	showSkills: true
+	showSkills: true,
+	obj: {
+		name: 'json'
+	}
 }
 function parseToDOM(str){
    var div = document.createElement("div");
@@ -138,20 +154,27 @@ function append(nodeList){
 var numData = {
 	skills: ["js", "html", "css",[1,2,3,4]],
 	'num':[11,12,13,14],
-	'img': 'http://www.baidu.com/img/baidu_jgylogo3.gif?v=17058940.gif&'
+	'img': 'http://www.baidu.com/img/baidu_jgylogo3.gif?v=17058940.gif&',
+	obj: {
+		name: 'hello',
+		age: 18
+	},
+	dateTime: '2014-12-1 14:55:23'
 }
 
 var newTpl1 = fasTpl( document.getElementById( 'tpl' ).innerHTML ),
 	html = newTpl1.render(numData);
 
-var newTpl2 = fasTpl( document.getElementById( 'tpl' ).innerHTML ),
-	html2 = newTpl2.render(numData);
+// var newTpl2 = fasTpl( document.getElementById( 'tpl' ).innerHTML ),
+// 	html2 = newTpl2.render(numData);
 document.getElementById( 'test' ).appendChild( document.createTextNode(html));
 
 append( parseToDOM( html ) );
 
+template('testtpl', data);
+
 // var startDate1 = new Date().getTime();
-// juicer(document.getElementById( 'ju' ).innerHTML, {});
+// juicer(document.getElementById( 'ju' ).innerHTML, data);
 // var endDate1 = new Date().getTime();
 // console.log( endDate1 - startDate1 )
 

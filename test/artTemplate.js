@@ -407,6 +407,7 @@ function compiler (source, options) {
     
     // html与逻辑语法分离
     forEach(source.split(openTag), function (code) {
+
         code = code.split(closeTag);
         
         var $0 = code[0];
@@ -419,7 +420,7 @@ function compiler (source, options) {
          
         // code: [logic, html]
         } else {
-            
+// console.log(code);            
             mainCode += logic($0);
            
             if ($1) {
@@ -487,7 +488,7 @@ function compiler (source, options) {
     
     // 处理逻辑语句
     function logic (code) {
-
+// console.log(code)
         var thisLine = line;
        
         if (parser) {
@@ -538,10 +539,10 @@ function compiler (source, options) {
         if (debug) {
             code = "$line=" + thisLine + ";" + code;
         }
-        
+// console.log(code)          
         // 提取模板中的变量名
         forEach(getVariable(code), function (name) {
-            
+// console.log(name)            
             // name 值可能为空，在安卓低版本浏览器下
             if (!name || uniq[name]) {
                 return;

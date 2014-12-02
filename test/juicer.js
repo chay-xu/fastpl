@@ -439,7 +439,7 @@
             tpl = this.__toNative(tpl, options);
 
             this._render = new Function('_, _method', tpl);
-
+// console.log(this._render)
             this.render = function(_, _method) {
                 if(!_method || _method !== that.options._method) {
                     _method = __creator(_method, that.options._method);

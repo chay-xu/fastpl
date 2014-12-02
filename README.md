@@ -6,7 +6,8 @@ fastpl 是一个高效、轻量的Javascript模板引擎，性能卓越、支持
 
       var data = {
       	list: ["js", "html", "css"],
-      	showList: true
+      	showList: true，
+      	dataTime: '2014-12-1 14:14:14'
       }
       
 > 模板语法
@@ -14,8 +15,9 @@ fastpl 是一个高效、轻量的Javascript模板引擎，性能卓越、支持
       <script type="text/tmpl" id="test">
         {{ if showList }}
           {{for list}}
-            <a href="#"> ${ _value } </a>
+            <a href="#"> ${ $value } </a>
           {{/for}}
+          <span>${ dataTime }</span>
         {{/if }}
       </script>
       
@@ -27,13 +29,43 @@ fastpl 是一个高效、轻量的Javascript模板引擎，性能卓越、支持
       // var html = fasTpl( document.getElementById( 'test' ).innerHTML, data );
       
 ## 语法详解
-语法三种写法，方便区分逻辑和变量。
+语法四种写法，方便区分逻辑和变量。
 
       逻辑语法：{{ }}
       变量名语法：${}
       变量值不转义语法：$${}
+      注释语法：<!-- -->
+
+#### 变量 ${ }
+变量语法，用来输出变量，现在提供了一个时间格式化方法。
+
+      <span>${ dateTime|'yyyy-MM-dd' }</span>
+  
+下面是详细的格式参数：
       
-##### {{ if }}
+       // y 年
+      // M 月
+      // d 日
+      // E 星期
+      // h 时 12小时制
+      // H 时 24小时制
+      // m 分
+      // s 秒
+      // q 季度
+      // S 毫秒
+
+#### 变量 $${ }
+如果不想转义输出数据，使用`$${}`
+
+##### 注释 <!-- -->
+注释中的语句将不会渲染，和html原生注释用法一样。
+
+ <!-- <span>${ dateTime|'yyyy-MM-dd' }</span> -->
+
+##### 逻辑语法 
+下面是逻辑语法
+
+###### {{ if }}
 
       {{ if showList != true }}
         <a href="#"></a>
@@ -43,11 +75,11 @@ fastpl 是一个高效、轻量的Javascript模板引擎，性能卓越、支持
         a href="#"></a>
       {{/if }}
       
-##### {{ for }}
-默认值2个值_value和_index，分别是值和索引。
+###### {{ for }}
+默认值2个值 `$value` 和 `$index` ，分别是值和索引。
 
       {{ for list }}
-        <a href="${_value}"> ${_index} </a>
+        <a href="${$value}"> ${_index} </a>
       {{/for }}
       
 自定义变量名
@@ -62,7 +94,7 @@ fastpl 是一个高效、轻量的Javascript模板引擎，性能卓越、支持
         <a href="#"> ${list} </a>
       {{/for }}
       
-##### {{ log }}
+###### {{ log }}
 console.log日志输出，可以用来调试。
 
         <a href="#"> {{log '123'}} </a>

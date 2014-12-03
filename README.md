@@ -67,6 +67,14 @@ fastpl 是一个高效、轻量的Javascript模板引擎，性能卓越、支持
       // q 季度
       // S 毫秒
 
+> 添加自定义方法
+
+__fastpl.tools( name, callback );__
+
+      fastpl.tools( 'toString', function( value, args ){ 
+            return String( value ).toString();
+      })
+      
 #### 变量 ${= }
 如果不想html转义输出数据，使用`${= }`
 

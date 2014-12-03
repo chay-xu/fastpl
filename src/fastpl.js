@@ -24,10 +24,9 @@
     // 转义
     var _escape_ = function( html ){
 
-        // return ("" + html ).split("<").join("&lt;").split(">").join("&gt;").split('"').join("&#34;").split("'").join("&#39;");
         if(typeof html !== 'string') return html;
-var val = html.replace( /[&<>"']+/igm, escapeFn )
-        return val
+
+        return html.replace( /[&<>"']+/igm, escapeFn )
     }
 
     // 是否数组
@@ -37,8 +36,7 @@ var val = html.replace( /[&<>"']+/igm, escapeFn )
 
     // each 循环
     var _each_ = function (data, min, max, callback) {
-        var i = min,
-            len = max;
+        var i, len;
 
         // if not min and max
         // if( typeof min === 'function' ){
@@ -49,6 +47,8 @@ var val = html.replace( /[&<>"']+/igm, escapeFn )
         // }
 
         if (isArray(data)) {
+            i = min;
+            len = max;
             for (; i < len; i++) {
                 callback.call(data, data[i], i, data);
             }
@@ -109,7 +109,7 @@ var val = html.replace( /[&<>"']+/igm, escapeFn )
         if( !value ){
             return;
         }else{
-            return value.replace( /\B(?=(?:\d{3})+$)/g, ',' )
+            return String(value).replace( /\B(?=(?:\d{3})+$)/g, ',' )
         }
     };
 
@@ -129,11 +129,16 @@ var val = html.replace( /[&<>"']+/igm, escapeFn )
         return false;
     };
 
-    var Tpl = function( tpl ){
-        this._parse( tpl );
+    // fast tpl function
+    var fasTpl = function( tpl, data ){
+        if(typeof tpl !== 'string') throw('Template not found');
+
+        var tplObj = fasTpl._parse.call( fasTpl, tpl );
+
+        return data === undefined ? tplObj : tplObj.render( data );
     };
 
-    var tools = Tpl.tools = {
+    var tools = fasTpl.tools = {
         _escape_: _escape_,
         _each_: _each_,
         count: count,
@@ -141,7 +146,7 @@ var val = html.replace( /[&<>"']+/igm, escapeFn )
         number_format: number_format
     }
 
-    Tpl.tags = {
+    fasTpl.tags = {
         langOpen: '{{',
         langClose: '}}',
         varOpen: '\\${',
@@ -149,7 +154,7 @@ var val = html.replace( /[&<>"']+/igm, escapeFn )
         commentOpen: '<!--',
         commentClose: '-->'
     }
-    Tpl.statement = {
+    fasTpl.statement = {
         'if': function( args ){
             return 'if(' + args + '){'
         },
@@ -163,10 +168,9 @@ var val = html.replace( /[&<>"']+/igm, escapeFn )
             return '}'
         },
         'for': function( args, param ){
-            var str = '';
-                // temp = key ? key.substr(1) : (),
+            var str = '',
                 isNum = param && /\d+/.test( param.split(',')[0] );
-// console.log(param && /\d+/.test( param.split(',')[0] ), '+++++++++')
+
             if( isNum === false ){
                 // str = 'for(var ' + temp + ' in ' + args + '){'
                 //     + 'if(' + args + '.hasOwnProperty(' + temp + ')){'
@@ -175,6 +179,7 @@ var val = html.replace( /[&<>"']+/igm, escapeFn )
 
                 // 参数为字母
                 str = '_each_('+ args +',0,'+ args +'.length,function('+param+'){'
+                // str = '_each_('+ args +',function('+param+'){'
             }else if( isNum ){
                 // range = args.slice(1,-1).split( ',' );
                 // str = 'for (var '+ temp +' = '+range[0]+'; '+ temp +'< '+range[1]+'; '+ temp +'++) {{'
@@ -183,7 +188,8 @@ var val = html.replace( /[&<>"']+/igm, escapeFn )
                 str = '_each_([],'+ param +',function($value,'+args+'){'
             }else{
                 // 无参数
-                str = '_each_('+ args +',0,'+ args +'.length,function($value,$index){'
+                str = '_each_('+ args +',0,'+args+'.length,function($value,$index){'
+                // str = '_each_('+ args +',function($value,$index){'
             }
 
             return str
@@ -196,44 +202,68 @@ var val = html.replace( /[&<>"']+/igm, escapeFn )
         }
     }
     
-    Tpl.pt = Tpl.prototype;
     // 编译成string语法
-    Tpl.pt._compile = function( strTpl ){
+    fasTpl._compile = function( strTpl ){
         // regexp
         // '\\s*(\\/?\\w+(?:\\s*if)?)\\s*(?:([^\\(]*)(?:\\(([\\d\\w,]*)\\))?)\\s*'
-        var reg = '\\s*(\\/?\\w+(?:\\s*if)?)\\s*(?:([^\\'+ Tpl.tags.langClose +'\\(]*)(?:\\(([\\d\\w,]*)\\))?)\\s*',
+        var reg = '\\s*(\\/?\\w+(?:\\s*if)?)\\s*(?:([^\\'+ fasTpl.tags.langClose +'\\(]*)(?:\\(([\\d\\w,]*)\\))?)\\s*',
             // 语法操作正则
-            operationReg = Tpl.tags.langOpen + reg + Tpl.tags.langClose,
+            operationReg = fasTpl.tags.langOpen + reg + fasTpl.tags.langClose,
             // 变量值正则
-            variableReg = Tpl.tags.varOpen + '([=\\s]?)([^\\|]+?)(?:\\|([\\s\\S]+?))?' + Tpl.tags.varClose,
+            variableReg = fasTpl.tags.varOpen + '([=\\s]?)([^\\|]+?)(?:\\|([\\s\\S]+?))?' + fasTpl.tags.varClose,
             // 变量值不转义正则
-            //escapeReg = Tpl.tags.escapeOpen + '([\\s\\S]+?)\\s*(?:\\|([\\s\\S]+?))?' + Tpl.tags.escapeClose,
+            //escapeReg = fasTpl.tags.escapeOpen + '([\\s\\S]+?)\\s*(?:\\|([\\s\\S]+?))?' + fasTpl.tags.escapeClose,
             // 注释
-            commentReg = Tpl.tags.commentOpen + '[\\s\\S]*' + Tpl.tags.commentClose,
+            commentReg = fasTpl.tags.commentOpen + '[\\s\\S]*' + fasTpl.tags.commentClose,
             operationPattern = new RegExp(operationReg, 'igm'),
             variablePattern = new RegExp(variableReg, 'igm'),
             //noneencodePattern = new RegExp(escapeReg, 'igm'),
             commentPattern = new RegExp(commentReg, 'igm'),
             headerCode = '',
+            footerCode = '',
             list = {},
             view;
+
+        // 声明自定义函数
+        function concat( name ){
+// console.log( list[ name ] )
+            var val;
+            if( !name || list[ name ] ) return;
+            if( tools[ name ] ){
+                val = '$tools.' + name;
+            }else{
+                val = '$data.' + name;
+            }
+            headerCode += name + '=' + val + ',';
+            list[ name ] = true;
+        }
 
         // 替换语法
         view = strTpl
             //.replace(/[\r\t\n]/g, '')
+            // 去掉注释
             .replace( commentPattern, '')
             .replace( operationPattern, function(all, type, args, param ){
                 // console.log(all, type,'---' , args,param);
-                var tag = Tpl.statement[ type ];
+                var tag = fasTpl.statement[ type ];
                 if ( !tag ) {
                     throw "Unknown template tag: " + type;
                 }
+                // var newVar = getVariable( args );
+                
+                // tools._each_(newVar,0,newVar.length, function(name){
+                //     concat( name );
+                //     // console.log( name )
+                // })
+                
                 //concat( args );
                 // 逻辑
                 return '\'; '+ tag( args, param )+' _str+=\'';
             })
             .replace( variablePattern, function(all, escape, value, args ){
                 // console.log(all, escape, type, custom );
+                
+                //concat( value );
                 // 转义变量
                 if( escape !== '=' ){
                     value = '_escape_(' + value + ')'
@@ -245,12 +275,7 @@ var val = html.replace( /[&<>"']+/igm, escapeFn )
                         name = split[0].replace(/\s/g, ''),
                         param = split[1] || undefined,
                         code;
-                    // var args = custom.split(':');
-                    
-                    // if( tools[ args[0] ] ){
-                    //     name = '$tools.'+args[0]+'('+args[1]+')';
-                    // }
-                    // value = concat( value, args );
+
                     // 执行自定义方法
                     value = name+'('+ value +','+ param+')'
                     concat( name );
@@ -258,69 +283,59 @@ var val = html.replace( /[&<>"']+/igm, escapeFn )
 // console.log( value )                
                 return '\'+'+value+ '+\'';
             })
-            // .replace( noneencodePattern, function(all, type, format ){
-            //     // 时间格式
-            //     if( format ) type = '_format_(' + type + ','+ format +')';
-            //     // 变量
-            //     return '\'+' + type + '+\'';
-            // })
             .replace(/[\r\t\n]/g,'');
 
-        // 声明自定义函数
-        function concat( name ){
+        // view = 'var _escape_=$tools._escape_,_each_=$tools._each_,'+ headerCode +'_str = \'\';'
+        //      +  ' _str+=\''+ view +'\'; return new String(_str);';
+        headerCode = 'var _escape_=$tools._escape_,_each_=$tools._each_,'+ headerCode;
+        footerCode = '_str = \'\';_str+=\''+ view +'\'; return new String(_str);';
 
-            if( list[ name ] ) return;
-            if( tools[ name ] ){
-                code = '$tools.' + name;
-            }
-            headerCode += name + '=' + code + ',';
-            list[ name ] = true;
+        return function( data ){
+            var dataCode = '', code;
+
+            // 循环数据keyname，声明成变量,方便直接读取
+            // $data.name
+            tools._each_(data,0,0, function( value, name ){
+                dataCode += name + '=$data.' + name+',';
+            })
+            // 组合代码
+            code = headerCode + dataCode + footerCode;
+            // console.log( code );
+            return (new Function( '$data, $tools', code ))(data, tools);
         }
-        view = 'var _escape_=$tools._escape_,_each_=$tools._each_,'+ headerCode +'_str = \'\';'
-             +  'with($data){ _str+=\''+ view +'\'}; return new String(_str);';
-
-        return view;
     }
     // 解析成js语法
-    Tpl.pt._parse = function( tpl ){
-
+    fasTpl._parse = function( tpl ){
+        var viewFn;
+// console.log( this );
         // 判断是否已经缓存
         if( _cache[ tpl ] ){
-            var view = _cache[ tpl ];
+            viewFn = _cache[ tpl ];
         }else{
-            var view = this._compile(tpl);
-            _cache[ tpl ] = view;
+            // 返回解析但未渲染数据的函数
+            viewFn = this._compile(tpl);
+            _cache[ tpl ] = viewFn;
         }
-// console.log( view );
+// console.log( viewFn );
         
-        // 返回解析但未渲染数据的函数
-        try{
-            this._tpl = new Function( '$data, $tools', view );
+        // 生成新的渲染函数
+        function render(){
+            this._tpl = viewFn;
+            this.render = function( data ){
+                try{
+                    // 渲染数据,返回html
+                    return this._tpl( data ).replace(/(^\s*)|(\s*$)/g,'');
+                    // this._tpl = new Function( '$data, $tools', view );
+                    
+                }catch (e){
+                    throw( e )
+                }
+            }
             
-        }catch (e){
-            throw( e )
         }
-        // this._tpl.prototype = units; 
 
-        return this;
+        return new render();
     }
-    // 渲染数据,返回html
-    Tpl.pt.render = function( data ){
-        var html = this._tpl( data, tools )
-           // .join('')
-           .replace(/(^\s*)|(\s*$)/g,'');
-
-        return html;
-    }
-
-    var fasTpl = function( tpl, data ){
-        if(typeof tpl !== 'string') throw('Template not found');
-
-        var tplObj = new Tpl( tpl, data );
-
-        return data === undefined ? tplObj : tplObj.render( data );
-    };
-
 
     typeof define == "function" ? define(function() {
         return fasTpl;

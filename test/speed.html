@@ -82,15 +82,6 @@ var testList = [
 		}
 	},
 	{
-		name: 'fastpl',
-		test: function(){
-			var newTpl = fasTpl( document.getElementById( 'tpl' ).innerHTML ),
-				html = newTpl.render(data);
-
-			//console.log(html);
-		}
-	},
-	{
 		name: 'juicer',
 		test: function(){
 			var html = juicer(document.getElementById( 'ju' ).innerHTML, data);
@@ -102,6 +93,15 @@ var testList = [
 		name: 'jquery.tmpl',
 		test: function(){
 			var html = $.tmpl(document.getElementById( 'tmpl' ).innerHTML, data);
+
+			//console.log(html);
+		}
+	},
+	{
+		name: 'fastpl',
+		test: function(){
+			var newTpl = fasTpl( document.getElementById( 'tpl' ).innerHTML ),
+				html = newTpl.render(data);
 
 			//console.log(html);
 		}

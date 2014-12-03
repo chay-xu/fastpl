@@ -19,7 +19,8 @@ var numData = {
 		name: 'hello',
 		age: 18
 	},
-	dateTime: '2014-12-1 14:55:23'
+	dateTime: '2014-12-1 14:55:23',
+	number: 1234567
 }
 		</code>
 		</pre>
@@ -29,16 +30,28 @@ var numData = {
 		<div>My skills:
 
 		<p>
-			${dateTime | date_format:'yyyy-MM-dd EEE' }
+			日期：${dateTime | date_format:'yyyy-MM-dd EEE' }
+		</p>
+		<p>
+			货币：${number | number_format }
 		</p>
 
 		<p>
+		0-9的循环：
 		{{for i(0,10)}}
 			<a href="#"> ${ i } </a>
 		{{/for}}
 		</p>
 
 		<p>
+		数组循环：
+		{{for num(v,i) }}
+			<a href="#"> ${ v } </a>
+		{{/for}}
+		</p>
+
+		<p>
+		多层数组循环：
 		{{for skills(v,i)}}
 			{{if i==3}}
 				{{for skills[i]}}
@@ -51,12 +64,7 @@ var numData = {
 		</p>
 
 		<p>
-		{{for num(v,i) }}
-			<a href="#"> ${ v } </a>
-		{{/for}}
-		</p>
-
-		<p>
+		对象循环：
 		{{for obj(v,i) }}
 		${obj|count}
 			<a href="#"> ${ i }: ${ v }  </a>
@@ -64,6 +72,7 @@ var numData = {
 		</p>
 
 		<p>
+		默认变量输出：
 		{{for num}}
 			<div>
 			<a href="#"> **** ${ $value }</a>
@@ -74,29 +83,35 @@ var numData = {
 		{{/for}}
 		</p>
 
+		判断：
 		{{ if !num }}
 			<p>if</p>
 		{{ else if num != false }}
 			<p>elseif!</p>
-			<img src="${img}"/>
 		{{/if }}
 
 		{{ if num && num!=false }}
 			<p>elseif&!</p>
 		{{/if }}
 
-		{{ if num || 3%3==0 }}
+		{{ if num || 3%3=='0' }}
 			<p>elseif%</p>
 		{{/if }}
+
+		图片：
+		<img src="${img}"/>
 		</div>
 	</script>
-	<!-- 
 
-		// {{ if !num }}
-		// 	<p>if</p>
-		// {{ else if num != false }}
-		// 	<p>elseif!</p>
-		// {{/if }} -->
+	<script type="text/tpl" id="easy">
+
+		{{ if !num }}
+			<p>if</p>
+		{{ else if num != false }}
+			<p>elseif!</p>
+			<img src="${img}"/>
+		{{/if }}
+	</script>
 
 	<script type="text/tpl" id="ju">
 		<div>My skills:
@@ -147,8 +162,9 @@ function parseToDOM(str){
 // new Function( newTpl.replace(/[\r\t\n]/g,'') ).apply(data);
 
 function append(nodeList){
-	for(var node = 0,len = nodeList.length; node < len; node++){
-		document.getElementsByTagName( 'body' )[0].appendChild( nodeList[ node ] );
+	for(var index = 0,len = nodeList.length; index < len; index++){
+		var node = nodeList[ index ];
+		document.getElementsByTagName( 'body' )[0].appendChild( node );
 	}
 }
 var numData = {
@@ -159,7 +175,8 @@ var numData = {
 		name: 'hello',
 		age: 18
 	},
-	dateTime: '2014-12-1 14:55:23'
+	dateTime: '2014-12-1 14:55:23',
+	number: 1234567
 }
 
 var newTpl1 = fasTpl( document.getElementById( 'tpl' ).innerHTML ),

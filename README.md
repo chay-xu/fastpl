@@ -73,7 +73,7 @@ fastpl 是一个高效、轻量的Javascript模板引擎，性能卓越、支持
 #### 注释 <!-- -->
 注释中的语句将不会渲染，和html原生注释用法一样。
 
- <!-- <span>${ dateTime|'yyyy-MM-dd' }</span> -->
+      <!-- <span>${ dateTime|'yyyy-MM-dd' }</span> -->
 
 ##### 逻辑语法 
 下面是逻辑语法
@@ -92,7 +92,7 @@ fastpl 是一个高效、轻量的Javascript模板引擎，性能卓越、支持
 默认值2个值 `$value` 和 `$index` ，分别是值和索引。
 
       {{ for list }}
-        <a href="${$value}"> ${_index} </a>
+        <a href="${$value}"> ${ $index} </a>
       {{/for }}
       
 自定义变量名

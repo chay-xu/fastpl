@@ -138,12 +138,16 @@
         return data === undefined ? tplObj : tplObj.render( data );
     };
 
-    var tools = fasTpl.tools = {
+    var tools = {
         _escape_: _escape_,
         _each_: _each_,
         count: count,
         date_format: date_format,
         number_format: number_format
+    }
+
+    fasTpl.tools = function( name, fn ){
+        tools[ name ] = fn;
     }
 
     fasTpl.tags = {

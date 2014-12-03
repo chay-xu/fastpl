@@ -71,8 +71,8 @@ fastpl 是一个高效、轻量的Javascript模板引擎，性能卓越、支持
 
 __fastpl.tools( name, callback );__
 
-      fastpl.tools( 'toString', function( value, args ){ 
-            return String( value ).toString();
+      fastpl.tools( 'toString', function( val, args ){ 
+            return String( val ).toString();
       })
       
 #### 变量 ${= }

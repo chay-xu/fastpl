@@ -70,7 +70,7 @@
     var date_format = function( date, fmt ){
         if( !date ) return;
 
-        var dt = new Date( date ),
+        var dt = new Date( date.replace(/\-/g, '/') ),
             o = {         
                 "M+" : dt.getMonth()+1, //月份         
                 "d+" : dt.getDate(), //日         
@@ -91,16 +91,18 @@
             "6" : "\u516d"        
         };         
         if(/(y+)/.test(fmt)){         
-            fmt=fmt.replace(RegExp.$1, (dt.getFullYear()+"").substr(4 - RegExp.$1.length));         
+            fmt=fmt.replace(RegExp.$1, (dt.getFullYear()+"").substring(4 - RegExp.$1.length));
+            console.log( dt );         
         }         
         if(/(E+)/.test(fmt)){         
             fmt=fmt.replace(RegExp.$1, ((RegExp.$1.length>1) ? (RegExp.$1.length>2 ? "\u661f\u671f" : "\u5468") : "")+week[dt.getDay()+""]);         
         }         
         for(var k in o){         
             if(new RegExp("("+ k +")").test(fmt)){         
-                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));         
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substring((""+ o[k]).length)));         
             }         
-        }         
+        }
+                 
         return fmt;
     }
     // 数字格式化 货币

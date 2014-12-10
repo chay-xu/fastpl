@@ -58,6 +58,13 @@
             }
         }
     };
+    // if判断是否存在值
+    function _ifEmpty_( val, newVal ){
+        if( val )
+            return val;
+        else
+            return newVal;
+    }
     // 日期时间格式化
     /**
       * 可以用 1-2 个占位符 * 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字) * eg: * (new
@@ -91,8 +98,7 @@
             "6" : "\u516d"        
         };         
         if(/(y+)/.test(fmt)){         
-            fmt=fmt.replace(RegExp.$1, (dt.getFullYear()+"").substring(4 - RegExp.$1.length));
-            console.log( dt );         
+            fmt=fmt.replace(RegExp.$1, (dt.getFullYear()+"").substring(4 - RegExp.$1.length));        
         }         
         if(/(E+)/.test(fmt)){         
             fmt=fmt.replace(RegExp.$1, ((RegExp.$1.length>1) ? (RegExp.$1.length>2 ? "\u661f\u671f" : "\u5468") : "")+week[dt.getDay()+""]);         
@@ -143,6 +149,7 @@
     var tools = {
         _escape_: _escape_,
         _each_: _each_,
+        _ifEmpty_: _ifEmpty_,
         count: count,
         date_format: date_format,
         number_format: number_format
@@ -216,7 +223,7 @@
             // 语法操作正则
             operationReg = fasTpl.tags.langOpen + reg + fasTpl.tags.langClose,
             // 变量值正则
-            variableReg = fasTpl.tags.varOpen + '([=\\s]?)([^\\|]+?)(?:\\|([\\s\\S]+?))?' + fasTpl.tags.varClose,
+            variableReg = fasTpl.tags.varOpen + '([=\\s]?)([^\\|]+?)\\s*(?:(\\|+)([\\s\\S]+?))?' + fasTpl.tags.varClose,
             // 变量值不转义正则
             //escapeReg = fasTpl.tags.escapeOpen + '([\\s\\S]+?)\\s*(?:\\|([\\s\\S]+?))?' + fasTpl.tags.escapeClose,
             // 注释
@@ -266,26 +273,31 @@
                 // 逻辑
                 return '\'; '+ tag( args, param )+' _str+=\'';
             })
-            .replace( variablePattern, function(all, escape, value, args ){
+            .replace( variablePattern, function(all, escape, value, symbol, args ){
                 // console.log(all, escape, type, custom );
                 
-                //concat( value );
+                // || 判断语句
+                if( symbol == '||' ){
+                    value = '_ifEmpty_(this[\''+value+'\'],'+args+')';
+                }
                 // 转义变量
                 if( escape !== '=' ){
                     value = '_escape_(' + value + ')'
                 }
 
-                // 自定义方法
-                if( args ){
-                    var split = args.split(':'),
-                        name = split[0].replace(/\s/g, ''),
-                        param = split[1] || undefined,
-                        code;
+                // | 自定义方法
+                if( symbol == '|' ){
+                    if( args ){
+                        var split = args.split(':'),
+                            name = split[0].replace(/\s/g, ''),
+                            param = split[1] || undefined,
+                            code;
 
-                    // 执行自定义方法
-                    value = name+'('+ value +','+ param+')'
-                    concat( name );
-                };
+                        // 执行自定义方法
+                        value = name+'('+ value +','+ param+')'
+                        concat( name );
+                    };
+                }
 // console.log( value )                
                 return '\'+'+value+ '+\'';
             })
@@ -293,7 +305,7 @@
 
         // view = 'var _escape_=$tools._escape_,_each_=$tools._each_,'+ headerCode +'_str = \'\';'
         //      +  ' _str+=\''+ view +'\'; return new String(_str);';
-        headerCode = 'var _escape_=$tools._escape_,_each_=$tools._each_,'+ headerCode;
+        headerCode = 'var _escape_=$tools._escape_,_each_=$tools._each_,_ifEmpty_=$tools._ifEmpty_,'+ headerCode;
         footerCode = '_str = \'\';_str+=\''+ view +'\'; return new String(_str);';
 
         return function( data ){
@@ -334,6 +346,7 @@
                     // this._tpl = new Function( '$data, $tools', view );
                     
                 }catch (e){
+
                     throw( e )
                 }
             }

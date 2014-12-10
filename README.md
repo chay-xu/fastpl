@@ -42,7 +42,11 @@ fastpl 是一个高效、轻量的Javascript模板引擎，性能卓越、支持
       注释语法：<!-- -->
 
 #### 变量 ${ }
-变量语法，用来输出变量，现在提供了几个格式化方法。
+变量语法，用来输出变量，提供`判断语法`和`自定义方法`。
+
+      <p>${ dateTimes || '不存在dateTimes' }</p>
+      
+下面是3个默认提供格式化方法。
 
       <p>${ dateTime| date_format:'yyyy-MM-dd' }</p>
       <p>${ person|count }</p>

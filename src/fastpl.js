@@ -278,7 +278,12 @@
                 
                 // || 判断语句
                 if( symbol == '||' ){
-                    value = '_ifEmpty_(this[\''+value+'\'],'+args+')';
+                    // 防止未定义的变量报错
+                    if( value.indexOf( '.' ) === -1 ){
+                        concat( value );
+                    }
+
+                    value = '_ifEmpty_('+ value + ','+args+')';
                 }
                 // 转义变量
                 if( escape !== '=' ){

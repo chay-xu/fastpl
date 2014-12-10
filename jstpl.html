@@ -28,7 +28,10 @@ var numData = {
 	<div id="test"></div>
 	<script type="text/fastpl" id="tpl">
 		<div>My skills:
-${numbers || '没有numbers' }
+		<p>
+		${numbers || '没有numbers' }
+		${obj.names || '没有obj.names' }
+		</p>
 		<p>
 			日期：${dateTime | date_format:'yyyy-MM-dd EEE' }
 		</p>

@@ -1,5 +1,5 @@
 /**
- * @file js templete
+ * @file js template
  * @author xucaiyu
  * @email 569455187@qq.com
  * @version 1.0.0
@@ -156,7 +156,17 @@
     }
 
     fasTpl.tools = function( name, fn ){
-        tools[ name ] = fn;
+        if(typeof name === 'object' ){
+            for(var n in name ){
+                tools[ n ] = name[ n ];
+            }
+        }else{
+            tools[ name ] = fn;
+        }
+    }
+
+    fasTpl.getTools = function(){
+        return tools;
     }
 
     fasTpl.tags = {

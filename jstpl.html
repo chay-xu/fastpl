@@ -8,6 +8,11 @@
 	<!--<script type="text/javascript" src="build/fastpl-min.js"></script>-->
 </head>
 <body>
+	<a rel="useZoom: 'zoom1', smallImage: 'images/s1.jpg'" id="relE"></a>
+	<script type="text/javascript">
+console.log( document.getElementById( 'relE' ).attributes['rel'])
+		// new Function("return {" + document.getElementById( 'relE' ).attributes('rel') + "}")();
+	</script>
 	<div>
 		<pre>
 		<code>
@@ -28,9 +33,9 @@ var numData = {
 	<div id="test"></div>
 	<script type="text/fastpl" id="tpl">
 		<div>My skills:
-		<p>
+		<!--<p>
 		${numbers || '没有numbers' }
-		${obj.names || '没有obj.names' }
+		${obj.names || '没有obj.names' }-->
 		</p>
 		<p>
 			日期：${dateTime | date_format:'yyyy-MM-dd EEE' }
@@ -181,6 +186,15 @@ var numData = {
 	dateTime: '2014-12-1 14:55:23',
 	number: 1234567
 }
+
+fasTpl.tools({
+	name: function(){},
+	init: function(){return 1;}
+})
+fasTpl.tools('toString', function(){
+	
+})
+console.log( fasTpl.getTools() );
 
 var newTpl1 = fasTpl( document.getElementById( 'tpl' ).innerHTML ),
 	html = newTpl1.render(numData);

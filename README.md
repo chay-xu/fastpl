@@ -131,7 +131,7 @@ __fastpl.getTools();__
 访问数据全局变量可使用`_data`。
 
       {{ for list }}
-        <a href="${$value}"> ${ $index} </a>
+        <a href="${v}"> ${i} </a>
       {{/for }}
       
 自定义变量名

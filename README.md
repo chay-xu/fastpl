@@ -25,7 +25,7 @@ fastpl 是一个高效、轻量的Javascript模板引擎，语法简洁、性能
       <script type="text/tmpl" id="test">
         {{ if showList }}
           {{for list}}
-            <a href="#"> ${ $value } </a>
+            <a href="#"> ${ v } </a>
           {{/for}}
           <span>${ dataTime }</span>
         {{/if }}
@@ -46,6 +46,17 @@ fastpl 是一个高效、轻量的Javascript模板引擎，语法简洁、性能
       变量值不转义语法：${=}
       注释语法：<!-- -->
 
+> 修改默认语法
+
+      fasTpl.tags = {
+        langOpen: '{{',
+        langClose: '}}',
+        varOpen: '\\${',
+        varClose: '}',
+        commentOpen: '<!--',
+        commentClose: '-->'
+      }
+    
 #### 变量 ${ }
 变量语法，用来输出变量，提供`判断语法`和`自定义方法`。
 
@@ -78,12 +89,21 @@ fastpl 是一个高效、轻量的Javascript模板引擎，语法简洁、性能
 
 > 添加自定义方法
 
-__fastpl.tools( name, callback );__
+__fastpl.tools( string|object, [callback] );__
 
       fastpl.tools( 'toString', function( val, args ){ 
             return String( val ).toString();
       })
+      // 或者
+      fastpl.tools({
+            'toString': function( val, args ){ 
+                  return String( val ).toString();
+            }
+      })
       
+获取全部自定义方法
+__fastpl.getTools();__
+
 #### 变量 ${= }
 如果不想html转义输出数据，使用`${= }`
 
@@ -106,7 +126,9 @@ __fastpl.tools( name, callback );__
       {{/if }}
       
 ###### {{ for }}
-默认值2个值 `$value` 和 `$index` ，分别是值和索引。
+1.0版默认值已废弃是 ~~$value~~ 和 ~~$index~~ （为了兼容后端模板）。  
+2.0版默认值 `v` 和 `i` ，分别是值和索引。  
+访问数据全局变量可使用`_data`。
 
       {{ for list }}
         <a href="${$value}"> ${ $index} </a>
@@ -124,6 +146,14 @@ __fastpl.tools( name, callback );__
         <a href="#"> ${list} </a>
       {{/for }}
       
+###### {{ var }}
+申明一个或多个变量。
+
+      {{var i = 10}}
+	{{for (1,i) }}
+		<a href="#"> ${ i }  </a>
+	{{/for}}
+
 ###### {{ log }}
 console.log日志输出，可以用来调试。
 

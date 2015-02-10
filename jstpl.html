@@ -4,8 +4,8 @@
 	<title></title>
 	<script type="text/javascript" src="test/juicer.js"></script>
 	<script type="text/javascript" src="test/artTemplate.js"></script>
-	<script type="text/javascript" src="src/fastpl.js"></script>
-	<!--<script type="text/javascript" src="build/fastpl-min.js"></script>-->
+	<!-- // <script type="text/javascript" src="src/fastpl.js"></script> -->
+	<script type="text/javascript" src="build/fastpl-min.js"></script>
 </head>
 <body>
 	<a rel="useZoom: 'zoom1', smallImage: 'images/s1.jpg'" id="relE"></a>
@@ -63,7 +63,7 @@ var numData = {
 		{{for skills(v,i)}}
 			{{if i==3}}
 				{{for skills[i]}}
-					<a href="#"> ${ $value } </a>
+					<a href="#"> ${ v } </a>
 				{{/for}}
 			{{else}}
 				<a href="#"> ${ v } </a>
@@ -83,9 +83,9 @@ var numData = {
 		默认变量输出：
 		{{for num}}
 			<div>
-			<a href="#"> **** ${ $value }</a>
+			<a href="#"> **** ${ v }</a>
 			{{for skills}}
-				<a href="#"> ${ $value }</a>
+				<a href="#"> ${ v }</a>
 			{{/for}}
 			</div>
 		{{/for}}

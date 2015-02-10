@@ -1,0 +1,114 @@
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html;charset=utf-8">
+	<title>fastpl-easy</title>
+	<script type="text/javascript" src="test/juicer.js"></script>
+	<script type="text/javascript" src="test/artTemplate.js"></script>
+	<script type="text/javascript" src="src/fastpl.js"></script>
+	<!--<script type="text/javascript" src="build/fastpl-min.js"></script>-->
+</head>
+<body>
+	<a rel="useZoom: 'zoom1', smallImage: 'images/s1.jpg'" id="relE"></a>
+	<script type="text/javascript">
+	</script>
+	<div>
+	</div>
+	<div id="test"></div>
+	<script type="text/fastpl" id="tpl">
+	<div>
+		判断：
+		{{ if !num }}
+			<p>if</p>
+		{{ else if num != false }}
+			<p>elseif!</p>
+		{{/if }}
+
+		{{ if (num && num!=false) }}
+			<p>elseif&!</p>
+		{{/if }}
+
+		{{ if num || 3%3=='0' }}
+			<p>elseif%</p>
+		{{/if }}
+
+		图片：
+		<img src="${img}"/>
+
+		<p>
+		对象循环：
+		{{for obj(v,i) }}
+		${obj|count}
+			<a href="#"> ${ i }: ${ v }  </a>
+		{{/for}}
+		</p>
+
+		<p>
+		对象循环：
+		{{var i = 10}}
+		{{for (1,i) }}
+			<a href="#"> ${ i }  </a>
+		{{/for}}
+		</p>
+		{{for num(v) }}
+			<a href="#"> ${ v }  </a>
+		{{/for}}
+	</div>
+	</script>
+	<script>
+
+
+var data = {
+	skills: ["js", "html", "css",[1,2,3,4]],
+	showSkills: true,
+	arr: [1,2,3,4],
+	obj: {
+		name: 'json'
+	}
+}
+function parseToDOM(str){
+   var div = document.createElement("div");
+   if(typeof str == "string")
+       div.innerHTML = str;
+   return div.childNodes;
+}
+// new Function( newTpl.replace(/[\r\t\n]/g,'') ).apply(data);
+
+function append(nodeList){
+	for(var index = 0,len = nodeList.length; index < len; index++){
+		var node = nodeList[ index ];
+		document.getElementsByTagName( 'body' )[0].appendChild( node );
+	}
+}
+var numData = {
+	skills: ["js", "html", "css",[1,2,3,4]],
+	'num':[11,12,13,14],
+	'img': 'http://www.baidu.com/img/baidu_jgylogo3.gif?v=17058940.gif&',
+	obj: {
+		name: 'hello',
+		age: 18
+	},
+	dateTime: '2014-12-1 14:55:23',
+	number: 1234567
+}
+
+fasTpl.tools({
+	name: function(){},
+	init: function(){return 1;}
+})
+fasTpl.tools('toString', function(){
+	
+})
+// console.log( fasTpl.getTools() );
+
+var newTpl1 = fasTpl( document.getElementById( 'tpl' ).innerHTML ),
+	html = newTpl1.render(numData);
+
+// var newTpl2 = fasTpl( document.getElementById( 'tpl' ).innerHTML ),
+// 	html2 = newTpl2.render(numData);
+document.getElementById( 'test' ).appendChild( document.createTextNode(html));
+
+append( parseToDOM( html ) );
+
+	</script>
+</body>
+</html>

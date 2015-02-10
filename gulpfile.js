@@ -21,6 +21,8 @@ var options = {
 };
 // js压缩代码
 gulp.task('script', function (){
+    
+
      return gulp.src('src/*.js')
           // .pipe(concat('all.js'))
           // .pipe(gulp.dest('dist'))

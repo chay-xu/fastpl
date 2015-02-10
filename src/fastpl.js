@@ -2,7 +2,7 @@
  * @file js template
  * @author xucaiyu
  * @email 569455187@qq.com
- * @version 1.0.0
+ * @version 2.0
  * @date 2014-11-26
  * @license MIT License 
  */
@@ -177,7 +177,11 @@
         commentOpen: '<!--',
         commentClose: '-->'
     }
+    fasTpl.version = '2.0';
     fasTpl.statement = {
+        'var': function( args ){
+            return 'var ' + args + ';'
+        },
         'if': function( args ){
             return 'if(' + args + '){'
         },
@@ -190,29 +194,31 @@
         '/if': function( args ){
             return '}'
         },
-        'for': function( args, param ){
+        'for': function( args ){
             var str = '',
-                isNum = param && /\d+/.test( param.split(',')[0] );
+                args = args.replace( /\s/g, '' ),
+                tempArr = args.split( '(' ),
+                obj = tempArr[0],
+                val = tempArr[1] ? tempArr[1] : '',
+                params, isNum;
 
-            if( isNum === false ){
-                // str = 'for(var ' + temp + ' in ' + args + '){'
-                //     + 'if(' + args + '.hasOwnProperty(' + temp + ')){'
-                //     + 'var _value=' + args +'[' +temp+ '],'
-                //     + '_index='+temp+';';
-
-                // 参数为字母
-                str = '_each_('+ args +',0,'+ args +'.length,function('+param+'){'
-                // str = '_each_('+ args +',function('+param+'){'
-            }else if( isNum ){
-                // range = args.slice(1,-1).split( ',' );
-                // str = 'for (var '+ temp +' = '+range[0]+'; '+ temp +'< '+range[1]+'; '+ temp +'++) {{'
-                // range = args.slice(1,-1);
-                // 参数为数字
-                str = '_each_([],'+ param +',function($value,'+args+'){'
-            }else{
+      // console.log( tempArr );    
+            if( val === '' ){
                 // 无参数
-                str = '_each_('+ args +',0,'+args+'.length,function($value,$index){'
-                // str = '_each_('+ args +',function($value,$index){'
+                str = '_each_('+ obj +',0,'+obj+'.length,function(v, i){'
+            }else if( val !== '' ){
+                params = val.split( ')' )[0].split( ',' );
+                isNum = /\d+/.test( params[0] ) || /\d+/.test( params[1] );
+
+                if( !isNum ){
+                    // 参数为字母
+                    str = '_each_('+ obj +',0,'+ obj +'.length,function('+params+'){';
+                }else{
+                    // 参数为数字
+                    str = '_each_([],'+ params +',function(data,'+ (obj ? obj : 'i') +'){';
+                }
+            }else{
+                str = 'for'+ args;
             }
 
             return str
@@ -228,8 +234,8 @@
     // 编译成string语法
     fasTpl._compile = function( strTpl ){
         // regexp
-        // '\\s*(\\/?\\w+(?:\\s*if)?)\\s*(?:([^\\(]*)(?:\\(([\\d\\w,]*)\\))?)\\s*'
-        var reg = '\\s*(\\/?\\w+(?:\\s*if)?)\\s*(?:([^\\'+ fasTpl.tags.langClose +'\\(]*)(?:\\(([\\d\\w,]*)\\))?)\\s*',
+        // var reg = '\\s*(\\/?\\w+(?:\\s*if)?)\\s*(?:([^\\'+ fasTpl.tags.langClose +'\\(]*)(?:\\(([\\d\\w,]*)\\))?)\\s*',
+        var reg = '\\s*(\\/?\\w+(?:\\s*if)?)\\s*([^'+ fasTpl.tags.langClose +']*)',
             // 语法操作正则
             operationReg = fasTpl.tags.langOpen + reg + fasTpl.tags.langClose,
             // 变量值正则
@@ -249,13 +255,12 @@
 
         // 声明自定义函数
         function concat( name ){
-// console.log( list[ name ] )
             var val;
             if( !name || list[ name ] ) return;
             if( tools[ name ] ){
                 val = '$tools.' + name;
             }else{
-                val = '$data.' + name;
+                val = '_data.' + name;
             }
             headerCode += name + '=' + val + ',';
             list[ name ] = true;
@@ -266,22 +271,16 @@
             //.replace(/[\r\t\n]/g, '')
             // 去掉注释
             .replace( commentPattern, '')
-            .replace( operationPattern, function(all, type, args, param ){
+            .replace( operationPattern, function(all, type, args ){
                 // console.log(all, type,'---' , args,param);
+                // console.log( type, args )
                 var tag = fasTpl.statement[ type ];
                 if ( !tag ) {
                     throw "Unknown template tag: " + type;
                 }
-                // var newVar = getVariable( args );
                 
-                // tools._each_(newVar,0,newVar.length, function(name){
-                //     concat( name );
-                //     // console.log( name )
-                // })
-                
-                //concat( args );
                 // 逻辑
-                return '\'; '+ tag( args, param )+' _str+=\'';
+                return '\'; '+ tag( args )+' _str+=\'';
             })
             .replace( variablePattern, function(all, escape, value, symbol, args ){
                 // console.log(all, escape, type, custom );
@@ -327,14 +326,14 @@
             var dataCode = '', code;
 
             // 循环数据keyname，声明成变量,方便直接读取
-            // $data.name
+            // _data.name
             tools._each_(data,0,0, function( value, name ){
-                dataCode += name + '=$data.' + name+',';
+                dataCode += name + '=_data.' + name+',';
             })
             // 组合代码
             code = headerCode + dataCode + footerCode;
             // console.log( code );
-            return (new Function( '$data, $tools', code ))(data, tools);
+            return (new Function( '_data, $tools', code ))(data, tools);
         }
     }
     // 解析成js语法

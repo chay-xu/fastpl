@@ -149,7 +149,7 @@ __fastpl.getTools();__
 ###### {{ var }}
 申明一个或多个变量。
 
-      {{var i = 10}}
+	{{var i = 10}}
 	{{for (1,i) }}
 		<a href="#"> ${ i }  </a>
 	{{/for}}

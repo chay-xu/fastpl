@@ -116,6 +116,7 @@ __fastpl.getTools();__
 下面是逻辑语法
 
 ###### {{ if }}
+{{if}}在php smarty模板中会冲突，所以可以修改`fasTpl.tags`
 
       {{ if showList != true }}
         <a href="#"></a>

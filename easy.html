@@ -4,8 +4,8 @@
 	<title>fastpl-easy</title>
 	<script type="text/javascript" src="test/juicer.js"></script>
 	<script type="text/javascript" src="test/artTemplate.js"></script>
-	<script type="text/javascript" src="src/fastpl.js"></script>
-	<!--<script type="text/javascript" src="build/fastpl-min.js"></script>-->
+	<!-- // <script type="text/javascript" src="src/fastpl.js"></script> -->
+	<script type="text/javascript" src="build/fastpl-min.js"></script>
 </head>
 <body>
 	<a rel="useZoom: 'zoom1', smallImage: 'images/s1.jpg'" id="relE"></a>
@@ -22,11 +22,11 @@
 		{{ else if num != false }}
 			<p>elseif!</p>
 		{{/if }}
-
+{{literal}}
 		{{ if (num && num!=false) }}
 			<p>elseif&!</p>
 		{{/if }}
-
+{{/literal}}
 		{{ if num || 3%3=='0' }}
 			<p>elseif%</p>
 		{{/if }}
@@ -52,6 +52,12 @@
 		{{for num(v) }}
 			<a href="#"> ${ v }  </a>
 		{{/for}}
+
+		<p>
+		{{for data }}
+			<a href="#"> ${ v }  </a>
+		{{/for}}
+		</p>
 	</div>
 	</script>
 	<script>
@@ -87,6 +93,10 @@ var numData = {
 		name: 'hello',
 		age: 18
 	},
+	data: [{
+		name: 'hello',
+		age: 18
+	}],
 	dateTime: '2014-12-1 14:55:23',
 	number: 1234567
 }
@@ -105,7 +115,7 @@ var newTpl1 = fasTpl( document.getElementById( 'tpl' ).innerHTML ),
 
 // var newTpl2 = fasTpl( document.getElementById( 'tpl' ).innerHTML ),
 // 	html2 = newTpl2.render(numData);
-document.getElementById( 'test' ).appendChild( document.createTextNode(html));
+// document.getElementById( 'test' ).appendChild( document.createTextNode(html));
 
 append( parseToDOM( html ) );
 

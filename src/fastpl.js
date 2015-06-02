@@ -2,8 +2,8 @@
  * @file js template
  * @author xucaiyu
  * @email 569455187@qq.com
- * @version 2.0
- * @date 2014-11-26
+ * @version 3.0
+ * @date 2015-03-30
  * @license MIT License 
  */
 (function() {
@@ -177,7 +177,8 @@
         commentOpen: '<!--',
         commentClose: '-->'
     }
-    fasTpl.version = '2.0';
+    fasTpl.version = '3.0';
+    fasTpl.uid = '1';
     fasTpl.statement = {
         'var': function( args ){
             return 'var ' + args + ';'
@@ -236,6 +237,8 @@
         // regexp
         // var reg = '\\s*(\\/?\\w+(?:\\s*if)?)\\s*(?:([^\\'+ fasTpl.tags.langClose +'\\(]*)(?:\\(([\\d\\w,]*)\\))?)\\s*',
         var reg = '\\s*(\\/?\\w+(?:\\s*if)?)\\s*([^'+ fasTpl.tags.langClose +']*)',
+            // 过滤正则
+            literalReg = fasTpl.tags.langOpen + 'literal' + fasTpl.tags.langClose + '([\\s\\S]*)' + fasTpl.tags.langOpen + '/literal' + fasTpl.tags.langClose,
             // 语法操作正则
             operationReg = fasTpl.tags.langOpen + reg + fasTpl.tags.langClose,
             // 变量值正则
@@ -244,11 +247,12 @@
             //escapeReg = fasTpl.tags.escapeOpen + '([\\s\\S]+?)\\s*(?:\\|([\\s\\S]+?))?' + fasTpl.tags.escapeClose,
             // 注释
             commentReg = fasTpl.tags.commentOpen + '[\\s\\S]*' + fasTpl.tags.commentClose,
+            literalPattern = new RegExp(literalReg, 'igm'),
             operationPattern = new RegExp(operationReg, 'igm'),
             variablePattern = new RegExp(variableReg, 'igm'),
             //noneencodePattern = new RegExp(escapeReg, 'igm'),
             commentPattern = new RegExp(commentReg, 'igm'),
-            headerCode = '',
+            headerCode = 'var _escape_=$tools._escape_,_each_=$tools._each_,_ifEmpty_=$tools._ifEmpty_,',
             footerCode = '',
             list = {},
             view;
@@ -268,9 +272,15 @@
 
         // 替换语法
         view = strTpl
-            //.replace(/[\r\t\n]/g, '')
+            .replace(/[\r\t\n]/g, '')
             // 去掉注释
             .replace( commentPattern, '')
+            .replace( literalPattern, function(all, args){
+                var key = '_literal_'+ (fasTpl.uid++);
+
+                headerCode += key + '=\'' + args + '\',';
+                return '\';_str+=' + key + '+\'';
+            })
             .replace( operationPattern, function(all, type, args ){
                 // console.log(all, type,'---' , args,param);
                 // console.log( type, args )
@@ -319,7 +329,7 @@
 
         // view = 'var _escape_=$tools._escape_,_each_=$tools._each_,'+ headerCode +'_str = \'\';'
         //      +  ' _str+=\''+ view +'\'; return new String(_str);';
-        headerCode = 'var _escape_=$tools._escape_,_each_=$tools._each_,_ifEmpty_=$tools._ifEmpty_,'+ headerCode;
+        // headerCode = ''+ headerCode;
         footerCode = '_str = \'\';_str+=\''+ view +'\'; return new String(_str);';
 
         return function( data ){

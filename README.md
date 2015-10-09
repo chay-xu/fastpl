@@ -6,6 +6,10 @@ fastpl 是一个高效、轻量的Javascript模板引擎，能快速上手，语
 * 入门快，与主流js、node和后端smarty等模板引擎语法接近，上手简单
 * 自定义函数，提供方便的格式化函数，可添加自定义函数
 
+测试对比：[test](http://xu8511831.github.io/demo/fastpl/test.html)
+
+在线demo：[demo](http://xu8511831.github.io/demo/fastpl/index.html)
+
 ## 快速使用
 > 数据
 ```js
@@ -58,21 +62,24 @@ fastpl 是一个高效、轻量的Javascript模板引擎，能快速上手，语
       }
 ```    
 #### 变量 ${ }
-变量语法，用来输出变量，提供`逻辑语法`和`自定义方法`。
+变量语法，用来输出变量，提供`逻辑运算`和`自定义方法`。
 ```js
       <p>${ dateTimes || '不存在dateTimes' }</p>
-      <p>${ dateTimes ? 存在dateTimes : '不存在dateTimes' }</p>
+      <p>${ dateTimes ? '存在dateTimes' : '不存在dateTimes' }</p>
+      <p>${ !!dateTimes }</p>
 ```      
-下面是3个默认提供格式化方法。
+下面是1个默认提供格式化方法。
 ```js
-      <p>${ dateTime| date_format:'yyyy-MM-dd' }</p>
+      // fastpl.min.js
       <p>${ person|count }</p>
+      // fastpl-plus.min.js 才支持下面2个方法
+      <p>${ dateTime| date_format:'yyyy-MM-dd' }</p>
       <p>${ number|number_format }</p>
 ```  
  结果：
 ```js
-      2014-12-01
       2
+      2014-12-01
       12,345,678
 ```      
 下面是`date_format`详细的格式参数：

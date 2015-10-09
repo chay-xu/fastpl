@@ -1,0 +1,296 @@
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html;charset=utf-8">
+	<title></title>
+	<script type="text/javascript" src="jquery-latest.min.js"></script>
+	<script type="text/javascript" src="../build/fastpl-plus.min.js"></script>
+	<script type="text/javascript" src="juicer.js"></script>
+	<script type="text/javascript" src="artTemplate.js"></script>
+	<script type="text/javascript" src="jquery.tmpl.js"></script>
+</head>
+<body>
+	<div id="qunit"></div>
+	<div id="qunit-fixture"></div>
+	<div id="test"></div>
+
+	<script type="text/fastpl" id="variable">
+		<p>number: ${number}</p>
+		<p>string: ${string}</p>
+	</script>
+	<script type="text/fastpl" id="object">
+		<p>name: ${object.name}</p>
+	</script>
+	<script type="text/fastpl" id="array">
+		<p>array: ${array[0]}</p>
+	</script>
+	<script type="text/fastpl" id="logical-or">
+		<p>name: ${object.name || '无name'}</p>
+		<p>name: ${object.job || '无age'}</p>
+	</script>
+	<script type="text/fastpl" id="logical-and">
+		<p>age: ${object.name && object.age}</p>
+	</script>
+	<script type="text/fastpl" id="logical-not">
+		<p>job: ${ !!object.job}</p>
+	</script>
+	<script type="text/fastpl" id="operator">
+		<p>age: ${object.age ? object.age : '无age'}</p>
+	</script>
+	<script type="text/fastpl" id="loops-object">
+		{{for object(v,i) }}
+			<a href="#"> ${ v } </a>
+		{{/for}}
+	</script>
+	<script type="text/fastpl" id="loops-array">
+		{{for array(v,i) }}
+			<a href="#"> ${ v } </a>
+		{{/for}}
+	</script>
+	<script type="text/fastpl" id="multi-loops-object">
+		{{if object['like'] }}
+			{{for object.like(v, j) }}
+				<span> ${ v } </span>
+			{{/for}}
+		{{/if}}
+	</script>
+	<script type="text/fastpl" id="multi-loops-array">
+		{{for array(o, i) }}
+			{{if typeof o == 'object'}}
+				{{for o(v, j) }}
+					<span> ${ v } </span>
+				{{/for}}
+			{{/if}}
+		{{/for}}
+	</script>
+	<script type="text/fastpl" id="custom-loops">
+		{{for i(0, 3) }}
+			<a href="#"> ${ i } </a>
+		{{/for}}
+	</script>
+	<script type="text/fastpl" id="operation-statement">
+		{{ if !!isTrue }}
+			<p>if!</p>
+		{{ else if isTrue != false }}
+			<p>elseif!</p>
+		{{ else if isTrue || 2%3=='0' }}
+			<p>elseif%</p>
+		{{ else if isTrue && isTrue!=false }}
+			<p>elseif&</p>
+		{{else}}
+			<p>${isTrue}</p>
+		{{/if }}
+	</script>
+	<script type="text/fastpl" id="escape">
+		<p>default: ${escapes}</p>
+		<p>escape: ${=escapes}</p>
+	</script>
+	<script type="text/fastpl" id="url-img">
+		<img src="${=img}"/>
+	</script>
+	<script type="text/fastpl" id="functions">
+		<p>array count: ${array | count}</p>
+		<p>object count: ${object | count}</p>
+	</script>
+	<script type="text/fastpl" id="functions-plus">
+		<p>date: ${date | date_format:'yyyy-MM-dd EEE'}</p>
+	</script>
+	<script type="text/fastpl" id="speed">
+		<div>My skills:
+		{{for list}}
+			<a href="#"> ${ v } </a>
+		{{/for}}
+		</div>
+	</script>
+
+	<!-- 其他模板 begin -->
+	<script type="text/tmpl" id="ju">
+		<div>My skills:
+		{@each list as i}
+			<a href="#"> ${ i } </a>
+		{@/each}
+		</div>
+	</script>
+
+	<script type="text/tmpl" id="art">
+		<div>My skills:
+		{{each list}}
+			<a href="#">{{$index}}</a>
+		{{/each}}
+		</div>
+	</script>
+
+	<script type="text/tmpl" id="tmpl">
+		<div>My skills:
+		{{each(i,user) list}}
+			<a href="#">${ i }</a>
+		{{/each}}
+		</div>
+	</script>
+	<!-- 其他模板 end -->
+	
+	<!-- code -->
+	<link rel="stylesheet" href="qunit-1.19.0.css">
+	<script type="text/javascript" src="qunit-1.19.0.js"></script>
+	<script>
+	var data = {
+			escapes: "<>&\"'/",
+			img: 'http://www.baidu.com/img/baidu_jgylogo3.gif?v=17058940.gif&',
+			date: '2015-10-09',
+			isTrue: false,
+			number: 123,
+			string: 'string',
+			object: {
+				name: 'hero',
+				age: 18,
+				job: '',
+				like: ['books', 'games']
+			},
+			array: [888, {
+				name: 'jake'
+			}]
+		}
+
+module('语法测试');
+	// 变量测试
+	QUnit.test( 'base', function( assert ) {
+		var el1 = $( '#variable' ).html(),
+			el2 = $( '#object' ).html(),
+			el3 = $( '#array' ).html();
+
+		equal( fasTpl( el1, data), '<p>number: 123</p><p>string: string</p>', 'variable is pass')
+
+		equal( fasTpl( el2, data), '<p>name: hero</p>', 'object is pass')
+
+		equal( fasTpl( el3, data), '<p>array: 888</p>', 'array is pass')
+	});
+	// 逻辑运算测试
+	QUnit.test( 'operations', function( assert ) {
+		var el1 = $( '#logical-or' ).html(),
+			el2 = $( '#logical-and' ).html(),
+			el3 = $( '#logical-not' ).html(),
+			el4 = $( '#operator' ).html();
+
+		equal( fasTpl( el1, data), '<p>name: hero</p><p>name: 无age</p>', 'logical or is pass')
+
+		equal( fasTpl( el2, data), '<p>age: 18</p>', 'logical and is pass')
+
+		equal( fasTpl( el3, data), '<p>job: false</p>', 'logical not is pass')
+
+		equal( fasTpl( el4, data), '<p>age: 18</p>', 'conditional operator is pass')
+
+	});
+	// 循环测试
+	QUnit.test( 'loops', function( assert ) {
+		var el1 = $( '#loops-object' ).html(),
+			el2 = $( '#loops-array' ).html();
+
+		equal( fasTpl( el1, data), '<a href=\"#\"> hero </a><a href=\"#\"> 18 </a><a href=\"#\">  </a><a href=\"#\"> books,games </a>', 'object loop is pass')
+
+		equal( fasTpl( el2, data), '<a href=\"#\"> 888 </a><a href=\"#\"> [object Object] </a>', 'array loop is pass')
+	});
+	// 多层循环测试
+	QUnit.test( 'multi loops', function( assert ) {
+		var el1 = $( '#multi-loops-object' ).html(),
+			el2 = $( '#multi-loops-array' ).html();
+
+		equal( fasTpl( el1, data), '<span> books </span><span> games </span>', 'multi loops object is pass')
+		equal( fasTpl( el2, data), '<span> jake </span>', 'multi loops array is pass')
+	});
+	// 自定义循环测试
+	QUnit.test( 'custom loops', function( assert ) {
+		var el1 = $( '#custom-loops' ).html();
+
+		equal( fasTpl( el1, data), '<a href=\"#\"> 0 </a><a href=\"#\"> 1 </a><a href=\"#\"> 2 </a>', 'custom loops is pass')
+	});
+	// 逻辑语法测试
+	QUnit.test( '{{if}} and {{else}} statement', function( assert ) {
+		var el1 = $( '#operation-statement' ).html();
+
+		equal( fasTpl( el1, data), '<p>false</p>', '{{if}} and {{else}} statement is pass')
+	});
+	// 不转义测试
+	QUnit.test( 'escape variable', function( assert ) {
+		var el1 = $( '#escape' ).html();
+
+		equal( fasTpl( el1, data), '<p>default: &lt;&gt;&amp;&quot;&#x27;&#x2f;</p><p>escape: <>&"\'/</p>', 'escape variable is pass')
+	});
+	// url测试
+	QUnit.test( 'url', function( assert ) {
+		var el1 = $( '#url-img' ).html();
+
+		equal( fasTpl( el1, data), '<img src=\"http://www.baidu.com/img/baidu_jgylogo3.gif?v=17058940.gif&\"/>', 'url is pass')
+	});
+	// functions测试
+	QUnit.test( 'functions', function( assert ) {
+		var el1 = $( '#functions' ).html(),
+			el2 = $( '#functions-plus' ).html();
+
+		equal( fasTpl( el1, data), '<p>array count: 2</p><p>object count: 4</p>', 'count function is pass')
+
+		equal( fasTpl( el2, data), '<p>date: 2015-10-09 星期五</p>', 'date_format function is pass')
+	});
+
+module('性能测试');
+	// speed测试，模板性能比较
+	QUnit.test( 'fastpl', function( assert ) {
+		var el1 = $( '#speed' ).html(),
+			dataList = {list:[],showList: true},
+			i = 0;
+
+		for (; i < 20000; i++) {
+			dataList.list.push( i );
+		};
+
+		function speed(){
+			return fasTpl( el1, dataList);
+		}
+
+		ok( speed(), 'fastpl is pass')
+	});
+	QUnit.test( 'artTemplate', function( assert ) {
+		var dataList = {list:[],showList: true},
+			i = 0;
+
+		for (; i < 20000; i++) {
+			dataList.list.push( i );
+		};
+
+		function speed(){
+			return template( 'art', dataList);
+		}
+
+		ok( speed(), 'artTemplate is pass')
+	});
+	QUnit.test( 'juicer', function( assert ) {
+		var el1 = $( '#ju' ).html(),
+			dataList = {list:[],showList: true},
+			i = 0;
+
+		for (; i < 20000; i++) {
+			dataList.list.push( i );
+		};
+
+		function speed(){
+			return juicer( el1, dataList);
+		}
+
+		ok( speed(), 'juicer is pass')
+	});
+	QUnit.test( 'jquery.tmpl', function( assert ) {
+		var el1 = $( '#tmpl' ).html(),
+			dataList = {list:[],showList: true},
+			i = 0;
+
+		for (; i < 20000; i++) {
+			dataList.list.push( i );
+		};
+
+		function speed(){
+			return $.tmpl( el1, dataList);
+		}
+
+		ok( speed(), 'jquery.tmpl is pass')
+	});
+	</script>
+</body>
+</html>

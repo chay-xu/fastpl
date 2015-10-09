@@ -1,0 +1,200 @@
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html;charset=utf-8">
+	<title></title>
+	<script type="text/javascript" src="../test/juicer.js"></script>
+	<script type="text/javascript" src="../test/artTemplate.js"></script>
+	<!-- // <script type="text/javascript" src="src/fastpl.js"></script> -->
+	<script type="text/javascript" src="../build/fastpl-plus.min.js"></script>
+</head>
+<body>
+	<a rel="useZoom: 'zoom1', smallImage: 'images/s1.jpg'" id="relE"></a>
+	<div>
+		<pre>
+		<code>
+var numData = {
+	skills: ["js", "html", "css", [1,2,3,4]],
+	'num':[11,12,13,14],
+	'img': 'http://www.baidu.com/img/baidu_jgylogo3.gif?v=17058940.gif&',
+	obj: {
+		name: 'hello',
+		age: 18
+	},
+	dateTime: '2014-12-1 14:55:23',
+	number: 1234567
+}
+		</code>
+		</pre>
+	</div>
+	<div id="test"></div>
+	<script type="text/fastpl" id="tpl">
+		<div>My skills:
+		<!--<p>
+		${numbers || '没有numbers' }
+		${obj.names || '没有obj.names' }-->
+		</p>
+		<p>
+			日期：${dateTime | date_format:'yyyy-MM-dd EEE' }
+		</p>
+		<p>
+			货币：${number | number_format }
+		</p>
+
+		<p>
+		0-9的循环：
+		{{for i(0,10)}}
+			<a href="#"> ${ i } </a>
+		{{/for}}
+		</p>
+
+		<p>
+		数组循环：
+		{{for num(v,i) }}
+			<a href="#"> ${ v } </a>
+		{{/for}}
+		</p>
+
+		<p>
+		多层数组循环：
+		{{for skills(v,i)}}
+			{{if i==3}}
+				{{for skills[i]}}
+					<a href="#"> ${ v } </a>
+				{{/for}}
+			{{else}}
+				<a href="#"> ${ v } </a>
+			{{/if}}
+		{{/for}}
+		</p>
+
+		<p>
+		对象循环：
+		{{for obj(v,i) }}
+		${obj|count}
+			<a href="#"> ${ i }: ${ v }  </a>
+		{{/for}}
+		</p>
+
+		<p>
+		默认变量输出：
+		{{for num}}
+			<div>
+			<a href="#"> **** ${ v }</a>
+			{{for skills}}
+				<a href="#"> ${ v }</a>
+			{{/for}}
+			</div>
+		{{/for}}
+		</p>
+
+		判断：
+		{{ if !num }}
+			<p>if</p>
+		{{ else if num != false }}
+			<p>elseif!</p>
+		{{/if }}
+
+		{{ if num && num!=false }}
+			<p>elseif&!</p>
+		{{/if }}
+
+		{{ if num || 3%3=='0' }}
+			<p>elseif%</p>
+		{{/if }}
+
+		{{ if obj.sex }}
+			<p>elseif%</p>
+		{{else}}
+			<p>obj is not exist sex</p>
+		{{/if }}
+
+		图片：
+		<img src="${img}"/>
+		</div>
+	</script>
+
+	<script type="text/tpl" id="easy">
+
+		{{ if !num }}
+			<p>if</p>
+		{{ else if num != false }}
+			<p>elseif!</p>
+			<img src="${img}"/>
+		{{/if }}
+	</script>
+
+	<script type="text/tpl" id="ju">
+		<div>My skills:
+		{@each i in range(0, 5)}
+			<a href="#"> ${ i } </a>
+			{{@if i==3}}
+			{{@/if}}
+		{@/each}
+		{{@each obj as item}}
+			{{item.name}}
+		{{@/each}}
+		</div>
+	</script>
+
+	<script type="text/tpl" id="testtpl">
+		{{each skills as v i}}
+			{{if i==3}}
+				{{each skills[i]}}
+					<a href="#"> {{ $value }} </a>
+				{{/each}}
+			{{else}}
+				<a href="#"> {{ v }} </a>
+			{{/if}}
+		{{/each}}
+		{{each obj}}
+			{{obj.name}}
+		{{/each}}
+		{{each skills as v i}}
+			<a href="#"> {{ v }} </a>
+		{{/each}}
+	</script>
+	<script>
+
+function parseToDOM(str){
+   var div = document.createElement("div");
+   if(typeof str == "string")
+       div.innerHTML = str;
+   return div.childNodes;
+}
+
+function append(nodeList){
+	for(var index = 0,len = nodeList.length; index < len; index++){
+		var node = nodeList[ index ];
+		document.getElementsByTagName( 'body' )[0].appendChild( node );
+	}
+}
+var numData = {
+	skills: ["js", "html", "css",[1,2,3,4]],
+	'num':[11,12,13,14],
+	'img': 'http://www.baidu.com/img/baidu_jgylogo3.gif?v=17058940.gif&',
+	obj: {
+		name: 'hello',
+		age: 18
+	},
+	dateTime: '2014-12-1 14:55:23',
+	number: 1234567
+}
+
+fasTpl.tools({
+	name: function(){},
+	init: function(){return 1;}
+})
+fasTpl.tools('toString', function(){
+	
+})
+// 渲染
+var tmpl = fasTpl( document.getElementById( 'tpl' ).innerHTML ),
+	html = tmpl.render(numData);
+
+document.getElementById( 'test' ).appendChild( document.createTextNode(html));
+
+append( parseToDOM( html ) );
+
+	</script>
+</body>
+</html>

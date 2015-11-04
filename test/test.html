@@ -102,6 +102,13 @@
 		</div>
 	</script>
 
+	<script type="text/fastpl" id="error">
+		{{for list(v, i)}}
+			<a href="#"> ${ v.s } </a>
+		{{/for}}
+		${kill}
+	</script>
+
 	<!-- 其他模板 begin -->
 	<script type="text/tmpl" id="ju">
 		<div>My skills:
@@ -290,6 +297,15 @@ module('性能测试');
 		}
 
 		ok( speed(), 'jquery.tmpl is pass')
+	});
+module('错误测试');
+	QUnit.test( 'error', function( assert ) {
+		var el1 = $( '#error' ).html(),
+			dataList = {list:[],showList: true};
+
+console.log(el1, fasTpl( el1, dataList))
+
+		ok( fasTpl( el1, dataList), 'jquery.tmpl is pass')
 	});
 	</script>
 </body>

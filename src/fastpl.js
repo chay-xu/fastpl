@@ -26,8 +26,8 @@
 
         if(typeof html !== 'string') return html;
 
-        return html.replace( /[&<>"'/]/igm, escapeFn )
-    }
+        return html.replace( /[&<>"'/]/igm, escapeFn );
+    };
 
     // 是否数组
     var isArray = Array.isArray || function (obj) {
@@ -85,7 +85,7 @@
         _each_: _each_,
         _logical_: _logical_,
         count: count
-    }
+    };
 
     fasTpl.tools = function( name, fn ){
         if(typeof name === 'object' ){
@@ -95,47 +95,52 @@
         }else{
             tools[ name ] = fn;
         }
-    }
+    };
 
     fasTpl.getTools = function(){
         return tools;
-    }
+    };
 
     fasTpl.tags = {
         langOpen: '{{',
         langClose: '}}',
         varOpen: '\\${',
         varClose: '}',
-        commentOpen: '<!--',
-        commentClose: '-->'
-    }
+        commentOpen: '{!--',
+        commentClose: '--}'
+    };
+
     fasTpl.version = '3.0';
     fasTpl.uid = '1';
     fasTpl.statement = {
         'var': function( args ){
-            return 'var ' + args + ';'
+            return 'var ' + args + ';\r\n';
         },
         'if': function( args ){
-            return 'if(' + args + '){'
+            return 'if(' + args + '){\r\n';
         },
         'else if': function( args ){
-            return '}else if(' + args + '){'
+            return '}else if(' + args + '){\r\n';
         },
         'else': function( args ){
-            return '}else{'
+            return '}else{\r\n';
         },
         '/if': function( args ){
-            return '}'
+            return '}\r\n';
         },
         'for': function( args ){
             var str = '',
-                args = args.replace( /\s/g, '' ),
-                tempArr = args.split( '(' ),
+                arg = args.replace( /\s/g, '' ),
+                tempArr = arg.split( '(' ),
                 obj = tempArr[0],
                 val = tempArr[1] ? tempArr[1] : '',
                 params, isNum;
 
-      // console.log( tempArr );    
+            // 无参数
+            if( !args ){
+                throw "{{for}}: is not arguments";
+            }
+
             if( val === '' ){
                 // 无参数
                 str = '_each_('+ obj +',0,'+obj+'.length,function(v, i){'
@@ -151,16 +156,16 @@
                     str = '_each_([],'+ params +',function(data,'+ (obj ? obj : 'i') +'){';
                 }
             }else{
-                str = 'for'+ args;
+                str = 'for'+ arg;
             }
 
-            return str
+            return '\r\n'+str+'\r\n';
         },
         '/for': function( args ){
-            return '});'
+            return '\r\n});\r\n';
         },
         'log': function( args ){
-            return 'console.log(' +args+ ');'
+            return 'console.log(' +args+ ');\r\n';
         }
     }
     
@@ -169,7 +174,7 @@
         // regexp
         // var reg = '\\s*(\\/?\\w+(?:\\s*if)?)\\s*(?:([^\\'+ fasTpl.tags.langClose +'\\(]*)(?:\\(([\\d\\w,]*)\\))?)\\s*',
         var reg = '\\s*(\\/?\\w+(?:\\s*if)?)\\s*([^'+ fasTpl.tags.langClose +']*)',
-            // 过滤正则
+            // 过滤语法的正则
             literalReg = fasTpl.tags.langOpen + 'literal' + fasTpl.tags.langClose + '([\\s\\S]*)' + fasTpl.tags.langOpen + '/literal' + fasTpl.tags.langClose,
             // 语法操作正则
             operationReg = fasTpl.tags.langOpen + reg + fasTpl.tags.langClose,
@@ -184,7 +189,7 @@
             variablePattern = new RegExp(variableReg, 'igm'),
             //noneencodePattern = new RegExp(escapeReg, 'igm'),
             commentPattern = new RegExp(commentReg, 'igm'),
-            headerCode = 'var _escape_=$tools._escape_,_each_=$tools._each_,_logical_=$tools._logical_,',
+            headerCode = 'var _tools_=_tools,\r\n_escape_=_tools_._escape_,\r\n_each_=_tools_._each_,\r\n_logical_=_tools_._logical_,\r\n',
             footerCode = '',
             list = {},
             view;
@@ -195,12 +200,8 @@
             // name不存在或者list中存在name
             if( !name || list[ name ] ) return;
             // 添加name
-            if( tools[ name ] ){
-                val = '$tools.' + name;
-            }else{
-                val = '_data.' + name;
-            }
-            headerCode += name + '=' + val + ',';
+            val = '_data.' + name;
+            headerCode += name + '=' + val + ',\r\n';
             list[ name ] = true;
         }
 
@@ -209,11 +210,14 @@
             .replace(/[\r\t\n]/g, '')
             // 去掉注释
             .replace( commentPattern, '')
+            // 原模板输出
             .replace( literalPattern, function(all, args){
-                var key = '_literal_'+ (fasTpl.uid++);
+                var literalVar = '_literal_'+ (fasTpl.uid++);
 
-                headerCode += key + '=\'' + args + '\',';
-                return '\';_str+=' + key + '+\'';
+                // 赋值变量
+                headerCode += literalVar + '=\'' + args + '\',';
+
+                return '\';_str+=' + literalVar + '+\'';
             })
             .replace( operationPattern, function(all, type, args){
                 // console.log(all, type,'---' , args,param);
@@ -224,7 +228,7 @@
                 }
                 
                 // 逻辑
-                return '\'; '+ tag( args )+' _str+=\'';
+                return '\'; '+ tag( args )+'_str+=\'';
             })
             .replace( variablePattern, function(all, escape, value, symbol, args){
                 // console.log(all, '--', escape, '--',value, '--', symbol, '--', args);
@@ -240,13 +244,18 @@
                 }else{
                     if( args ){
                         var split = args.split(':'),
-                            name = split[0].replace(/\s/g, ''),
-                            param = split[1] || undefined,
+                            name = split[0].replace(/\s/g, ''), // 自定义函数名
+                            param = split[1] || undefined,      // 参数
                             code;
 
+                        // 不存在的自定义函数
+                        if( !tools[ name ] ){
+                            throw "Unknown template method: " + name;
+                        }
                         // 执行自定义方法
-                        value = name+'('+ value +','+ param+')'
-                        concat( name );
+                        value = '_tools_.'+name+'('+ value +','+ param+')'
+                        // value = name+'('+ value +','+ param+')'
+                        // concat( name );
                     };
                 }
                 // 转义变量
@@ -256,12 +265,9 @@
                
                 return '\'+'+value+ '+\'';
             })
-            .replace(/[\r\t\n]/g,'');
+            // .replace(/[\r\t\n]/g,'');
 
-        // view = 'var _escape_=$tools._escape_,_each_=$tools._each_,'+ headerCode +'_str = \'\';'
-        //      +  ' _str+=\''+ view +'\'; return new String(_str);';
-        // headerCode = ''+ headerCode;
-        footerCode = '_str = \'\';_str+=\''+ view +'\'; return new String(_str);';
+        footerCode = '_str = \'\';\r\n_str+=\''+ view +'\';return new String(_str);';
 
         return function( data ){
             var dataCode = '', code;
@@ -269,17 +275,19 @@
             // 循环数据keyname，声明成变量,方便直接读取
             // _data.name
             tools._each_(data,0,0, function( value, name ){
-                dataCode += name + '=_data.' + name+',';
+                dataCode += name + '=_data.' + name+',\r\n';
             })
             // 组合代码
             code = headerCode + dataCode + footerCode;
-            return (new Function( '_data, $tools', code ))(data, tools);
+            code.replace(/\_str\+\=\'\'\;/g, '');
+
+            return code;
         }
     }
     // 解析成js语法
     fasTpl._parse = function( tpl ){
         var viewFn;
-// console.log( this );
+
         // 判断是否已经缓存
         if( _cache[ tpl ] ){
             viewFn = _cache[ tpl ];
@@ -288,20 +296,22 @@
             viewFn = this._compile(tpl);
             _cache[ tpl ] = viewFn;
         }
-// console.log( viewFn );
         
         // 生成新的渲染函数
         function render(){
             this._tpl = viewFn;
             this.render = function( data ){
+                var code;
+
                 try{
                     // 渲染数据,返回html
-                    return this._tpl( data ).replace(/(^\s*)|(\s*$)/g,'');
-                    // this._tpl = new Function( '$data, $tools', view );
+                    code = this._tpl( data );
+
+                    return (new Function( '_data, _tools',  code ))(data, tools).replace(/(^\s*)|(\s*$)/g,'');
                     
                 }catch (e){
-
-                    throw( e )
+                    // VM输出错误
+                    eval( code );
                 }
             }
             

@@ -86,7 +86,7 @@ var testList = [
 		test: function(){
 			var html = juicer(document.getElementById( 'ju' ).innerHTML, data);
 
-			//console.log(html);
+			// console.log(html);
 		}
 	},
 	{
@@ -126,10 +126,12 @@ function testFun(){
 
 	i++;
 	if(i < len) {
-		setTimeout(testFun, 800);
+		// setTimeout(testFun, 800);
+		testFun()
 	}
 }
-setTimeout(testFun, 6000);
+// setTimeout(testFun, 6000);
+testFun()
 	// console.log(
 	// 	TemplateEngine(document.getElementById( 'tpl' ).innerHTML, {
 	// 		skills: ["js", "html", "css"],

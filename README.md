@@ -113,7 +113,7 @@ __fastpl.tools( string|object, [callback] );__
 获取全部自定义方法
 __fastpl.getTools();__
 
-#### 变量 ${= }
+#### 不转义变量 ${= }
 如果不想html转义输出数据，使用`${= }`
 
 #### 注释 {!-- --}

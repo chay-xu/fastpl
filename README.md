@@ -85,7 +85,7 @@ fastpl 是一个高效、轻量的Javascript模板引擎，能快速上手，语
 ```      
 下面是`date_format`详细的格式参数：
       
-       // y 年
+      // y 年
       // M 月
       // d 日
       // E 星期

@@ -5,6 +5,7 @@ fastpl 是一个高效、轻量的Javascript模板引擎，能快速上手，语
 * 语法简洁，宽松写法减少错误，提供很多简洁的语法糖
 * 入门快，与主流js、node和后端smarty等模板引擎语法接近，上手简单
 * 自定义函数，提供方便的格式化函数，可添加自定义函数
+* 快速的错误定位，变量、语法等错误明确提示，未知错误抛出代码
 
 测试对比：[test](http://xu8511831.github.io/demo/fastpl/test.html)
 
@@ -48,7 +49,7 @@ fastpl 是一个高效、轻量的Javascript模板引擎，能快速上手，语
       逻辑语法：{{ }}
       变量名语法：${}
       变量值不转义语法：${=}
-      注释语法：<!-- -->
+      注释语法：{!-- --}
 
 > 修改默认语法
 ```js
@@ -57,8 +58,8 @@ fastpl 是一个高效、轻量的Javascript模板引擎，能快速上手，语
         langClose: '}}',
         varOpen: '\\${',
         varClose: '}',
-        commentOpen: '<!--',
-        commentClose: '-->'
+        commentOpen: '{!--',
+        commentClose: '--}'
       }
 ```    
 #### 变量 ${ }
@@ -84,7 +85,7 @@ fastpl 是一个高效、轻量的Javascript模板引擎，能快速上手，语
 ```      
 下面是`date_format`详细的格式参数：
       
-       // y 年
+      // y 年
       // M 月
       // d 日
       // E 星期
@@ -112,13 +113,25 @@ __fastpl.tools( string|object, [callback] );__
 获取全部自定义方法
 __fastpl.getTools();__
 
-#### 变量 ${= }
+#### 不转义变量 ${= }
 如果不想html转义输出数据，使用`${= }`
 
-#### 注释 <!-- -->
-注释中的语句将不会渲染，和html原生注释用法一样。
+#### 注释 {!-- --}
+注释中的语句将不会输出，也就不会渲染。
 
-      <!-- <span>${ dateTime|'yyyy-MM-dd' }</span> -->
+      {!-- <span>${ dateTime|'yyyy-MM-dd' }</span> --}
+
+###### {{ literal }}
+不编译模板，但会原文输出。
+```js
+      {{literal}}
+        <p>${ person|count }</p>
+      {{/literal}}
+```   
+输出结果：
+```js
+        <p>${ person|count }</p>
+```   
 
 ##### 逻辑语法 
 下面是逻辑语法

@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<meta http-equiv="Content-type" content="text/html;charset=utf-8">
@@ -29,10 +30,15 @@ var numData = {
 	<div id="test"></div>
 	<script type="text/fastpl" id="tpl-error">
 		<!-- ssss-->
+		{!-- ssss--}
 		{{literal}}
 			${sss}
 		{{/literal}}
 		${number | count}
+		{{for skills(v, i)}}
+			<a href="#"> ${ v } </a>
+		{{/for}}
+		${kill}
 		{{for i(0,10)}}
 			<a href="#"> ${ i } </a>
 		{{/for}}
@@ -188,7 +194,7 @@ var numData = {
 	},
 	dateTime: '2014-12-1 14:55:23',
 	number: 1234567
-}
+};
 
 fasTpl.tools({
 	name: function(){},
@@ -206,7 +212,7 @@ fasTpl.tools('toString', function(){
 // append( parseToDOM( html ) );
 
 // error
-console.log( fasTpl( document.getElementById( 'tpl-error' ).innerHTML, numData ) )
+console.log( fasTpl( document.getElementById( 'tpl-error' ).innerHTML, numData ) );
 	</script>
 </body>
 </html>

@@ -143,7 +143,7 @@
 
             if( val === '' ){
                 // 无参数
-                str = '_each_('+ obj +',0,'+obj+'.length,function(v, i){'
+                str = '_each_('+ obj +',0,'+obj+'.length,function(v, i){';
             }else if( val !== '' ){
                 params = val.split( ')' )[0].split( ',' );
                 isNum = /\d+/.test( params[0] ) || /\d+/.test( params[1] );
@@ -167,7 +167,7 @@
         'log': function( args ){
             return 'console.log(' +args+ ');\r\n';
         }
-    }
+    };
     
     // 编译成string语法
     fasTpl._compile = function( strTpl ){
@@ -217,7 +217,7 @@
                 // 赋值变量
                 headerCode += literalVar + '=\'' + args + '\',';
 
-                return '\';_str+=' + literalVar + '+\'';
+                return '\';\r\n_str+=' + literalVar + '+\'';
             })
             .replace( operationPattern, function(all, type, args){
                 // console.log(all, type,'---' , args,param);
@@ -232,6 +232,9 @@
             })
             .replace( variablePattern, function(all, escape, value, symbol, args){
                 // console.log(all, '--', escape, '--',value, '--', symbol, '--', args);
+                if ( !value ) {
+                    throw "Unknown template tag: " + value;
+                }
                 
                 // || 判断语句
                 if( symbol && symbol !== '|' ){
@@ -241,7 +244,7 @@
                     }
 
                     value = '_logical_('+ value + symbol + args+')';
-                }else{
+                }else if( symbol ){
                     if( args ){
                         var split = args.split(':'),
                             name = split[0].replace(/\s/g, ''), // 自定义函数名
@@ -253,21 +256,21 @@
                             throw "Unknown template method: " + name;
                         }
                         // 执行自定义方法
-                        value = '_tools_.'+name+'('+ value +','+ param+')'
+                        value = '_tools_.'+name+'('+ value +','+ param+')';
                         // value = name+'('+ value +','+ param+')'
                         // concat( name );
-                    };
+                    }
                 }
                 // 转义变量
                 if( escape !== '=' ){
-                    value = '_escape_(' + value + ')'
+                    value = '_escape_(' + value + ')';
                 }
                
                 return '\'+'+value+ '+\'';
-            })
+            });
             // .replace(/[\r\t\n]/g,'');
 
-        footerCode = '_str = \'\';\r\n_str+=\''+ view +'\';return new String(_str);';
+        footerCode = '_str = \'\';\r\n_str+=\''+ view +'\';\r\nreturn new String(_str);';
 
         return function( data ){
             var dataCode = '', code;
@@ -276,14 +279,14 @@
             // _data.name
             tools._each_(data,0,0, function( value, name ){
                 dataCode += name + '=_data.' + name+',\r\n';
-            })
+            });
             // 组合代码
             code = headerCode + dataCode + footerCode;
             code.replace(/\_str\+\=\'\'\;/g, '');
 
             return code;
-        }
-    }
+        };
+    };
     // 解析成js语法
     fasTpl._parse = function( tpl ){
         var viewFn;
@@ -310,18 +313,22 @@
                     return (new Function( '_data, _tools',  code ))(data, tools).replace(/(^\s*)|(\s*$)/g,'');
                     
                 }catch (e){
-                    // VM输出错误
-                    eval( code );
+                    if( e.name == 'ReferenceError' ){
+                        throw e;
+                    }else{
+                        // VM输出错误
+                        eval( code );
+                    }                    
                 }
-            }
+            };
             
         }
 
         return new render();
-    }
+    };
 
     typeof define == "function" ? define(function() {
         return fasTpl;
-    }) : typeof exports != "undefined" ? module.exports = fasTpl : window.fasTpl = fasTpl
+    }) : typeof exports != "undefined" ? module.exports = fasTpl : window.fasTpl = fasTpl;
     // return new Function( code.replace(/[\r\t\n]/g,'') ).apply(options);
 })();

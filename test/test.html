@@ -102,13 +102,6 @@
 		</div>
 	</script>
 
-	<script type="text/fastpl" id="error">
-		{{for list(v, i)}}
-			<a href="#"> ${ v.s } </a>
-		{{/for}}
-		${kill}
-	</script>
-
 	<!-- 其他模板 begin -->
 	<script type="text/tmpl" id="ju">
 		<div>My skills:
@@ -196,12 +189,12 @@ module('语法测试');
 		equal( fasTpl( el2, data), '<a href=\"#\"> 888 </a><a href=\"#\"> [object Object] </a>', 'array loop is pass')
 	});
 	// 多层循环测试
-	QUnit.test( 'multi loops', function( assert ) {
+	QUnit.test( 'multi-loops', function( assert ) {
 		var el1 = $( '#multi-loops-object' ).html(),
 			el2 = $( '#multi-loops-array' ).html();
 
-		equal( fasTpl( el1, data), '<span> books </span><span> games </span>', 'multi loops object is pass')
-		equal( fasTpl( el2, data), '<span> jake </span>', 'multi loops array is pass')
+		equal( fasTpl( el1, data), '<span> books </span><span> games </span>', 'multi-loops object is pass')
+		equal( fasTpl( el2, data), '<span> jake </span>', 'multi-loops array is pass')
 	});
 	// 自定义循环测试
 	QUnit.test( 'custom loops', function( assert ) {
@@ -297,15 +290,6 @@ module('性能测试');
 		}
 
 		ok( speed(), 'jquery.tmpl is pass')
-	});
-module('错误测试');
-	QUnit.test( 'error', function( assert ) {
-		var el1 = $( '#error' ).html(),
-			dataList = {list:[],showList: true};
-
-console.log(el1, fasTpl( el1, dataList))
-
-		ok( fasTpl( el1, dataList), 'jquery.tmpl is pass')
 	});
 	</script>
 </body>

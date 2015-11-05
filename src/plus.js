@@ -19,7 +19,7 @@
             o = {         
                 "M+" : dt.getMonth()+1, //月份         
                 "d+" : dt.getDate(), //日         
-                "h+" : dt.getHours()%12 == 0 ? 12 : dt.getHours()%12, //12小时制         
+                "h+" : dt.getHours()%12 === 0 ? 12 : dt.getHours()%12, //12小时制         
                 "H+" : dt.getHours(), //24小时制         
                 "m+" : dt.getMinutes(), //分         
                 "s+" : dt.getSeconds(), //秒         
@@ -48,20 +48,20 @@
         }
                  
         return fmt;
-    }
+    };
     // 数字格式化 货币
     var number_format = function( value ){
 
         if( !value ){
             return;
         }else{
-            return String(value).replace( /\B(?=(?:\d{3})+$)/g, ',' )
+            return String(value).replace( /\B(?=(?:\d{3})+$)/g, ',' );
         }
     };
 
     fasTpl.tools({
         date_format: date_format,
         number_format: number_format
-    })
+    });
 
 })();

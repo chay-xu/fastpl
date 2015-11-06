@@ -110,7 +110,7 @@
         commentClose: '--}'
     };
 
-    fasTpl.version = '3.0';
+    fasTpl.version = '4.0';
     fasTpl.uid = '1';
     fasTpl.statement = {
         'var': function( args ){

@@ -14,8 +14,11 @@
       */ 
     var date_format = function( date, fmt ){
         if( !date ) return;
+        
+        if( (typeof date) == 'string' )
+          date = date.replace(/\-/g, '/');
 
-        var dt = new Date( date.replace(/\-/g, '/') ),
+        var dt = new Date( date ),
             o = {         
                 "M+" : dt.getMonth()+1, //月份         
                 "d+" : dt.getDate(), //日         

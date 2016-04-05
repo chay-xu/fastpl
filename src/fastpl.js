@@ -246,10 +246,18 @@
                     value = '_logical_('+ value + symbol + args+')';
                 }else if( symbol ){
                     if( args ){
-                        var split = args.split(':'),
-                            name = split[0].replace(/\s/g, ''), // 自定义函数名
-                            param = split[1] || undefined,      // 参数
+                        // var split = args.split(':'),
+                        //     name = split[0].replace(/\s/g, ''), // 自定义函数名
+                        //     param = split[1] || undefined,      // 参数
+                        //     code;
+                        var indexof = args.indexOf(':'),
+                            name = args.split(':')[0].replace(/\s/g, ''), // 自定义函数名
+                            param = undefined,      // 参数
                             code;
+
+                        if( indexof !== -1 ){
+                            param = args.slice( indexof + 1 );
+                        }
 
                         // 不存在的自定义函数
                         if( !tools[ name ] ){

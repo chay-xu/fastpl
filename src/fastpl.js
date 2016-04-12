@@ -184,6 +184,7 @@
             //escapeReg = fasTpl.tags.escapeOpen + '([\\s\\S]+?)\\s*(?:\\|([\\s\\S]+?))?' + fasTpl.tags.escapeClose,
             // 注释
             commentReg = fasTpl.tags.commentOpen + '[\\s\\S]*' + fasTpl.tags.commentClose,
+            htmlPattern = new RegExp(fasTpl.tags.langClose + '(\')' + fasTpl.tags.langOpen, 'igm'),
             literalPattern = new RegExp(literalReg, 'igm'),
             operationPattern = new RegExp(operationReg, 'igm'),
             variablePattern = new RegExp(variableReg, 'igm'),
@@ -207,6 +208,7 @@
 
         // 替换语法
         view = strTpl
+            .replace( /'/igm, "\\'")
             .replace(/[\r\t\n]/g, '')
             // 去掉注释
             .replace( commentPattern, '')
@@ -221,14 +223,13 @@
             })
             .replace( operationPattern, function(all, type, args){
                 // console.log(all, type,'---' , args,param);
-                // console.log( type, args )
                 var tag = fasTpl.statement[ type ];
                 if ( !tag ) {
                     throw "Unknown template tag: " + type;
                 }
                 
                 // 逻辑
-                return '\'; '+ tag( args )+'_str+=\'';
+                return '\'; '+ tag( args ).replace(/\\'/igm, "'")+'_str+=\'';
             })
             .replace( variablePattern, function(all, escape, value, symbol, args){
                 // console.log(all, '--', escape, '--',value, '--', symbol, '--', args);
@@ -274,11 +275,12 @@
                     value = '_escape_(' + value + ')';
                 }
                
-                return '\'+'+value+ '+\'';
+                return '\'+'+value.replace(/\\'/igm, "'")+ '+\'';
             });
             // .replace(/[\r\t\n]/g,'');
 
         footerCode = '_str = \'\';\r\n_str+=\''+ view +'\';\r\nreturn new String(_str);';
+        
 
         return function( data ){
             var dataCode = '', code;

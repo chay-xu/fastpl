@@ -3,7 +3,7 @@
 	<meta http-equiv="Content-type" content="text/html;charset=utf-8">
 	<title></title>
 	<script type="text/javascript" src="jquery-latest.min.js"></script>
-	<script type="text/javascript" src="../build/fastpl-plus.min.js"></script>
+	// <script type="text/javascript" src="../build/fastpl-plus.min.js"></script>
 	<script type="text/javascript" src="juicer.js"></script>
 	<script type="text/javascript" src="artTemplate.js"></script>
 	<script type="text/javascript" src="jquery.tmpl.js"></script>
@@ -14,8 +14,8 @@
 	<div id="test"></div>
 
 	<script type="text/fastpl" id="variable">
-		<p>number: ${number}</p>
-		<p>string: ${string}</p>
+		<p>'number': ${number}</p>
+		<p>"string": ${string}</p>
 	</script>
 	<script type="text/fastpl" id="object">
 		<p>name: ${object.name}</p>
@@ -114,7 +114,7 @@
 	<script type="text/tmpl" id="art">
 		<div>My skills:
 		{{each list}}
-			<a href="#">{{$index}}</a>
+			<a href="#">''{{$index}}</a>
 		{{/each}}
 		</div>
 	</script>
@@ -122,7 +122,7 @@
 	<script type="text/tmpl" id="tmpl">
 		<div>My skills:
 		{{each(i,user) list}}
-			<a href="#">${ i }</a>
+			<a href="#">''${ i }</a>
 		{{/each}}
 		</div>
 	</script>
@@ -157,7 +157,7 @@ module('语法测试');
 			el2 = $( '#object' ).html(),
 			el3 = $( '#array' ).html();
 
-		equal( fasTpl( el1, data), '<p>number: 123</p><p>string: string</p>', 'variable is pass')
+		equal( fasTpl( el1, data), '<p>\'number\': 123</p><p>\"string\": string</p>', 'variable is pass')
 
 		equal( fasTpl( el2, data), '<p>name: hero</p>', 'object is pass')
 
@@ -286,6 +286,7 @@ module('性能测试');
 		};
 
 		function speed(){
+			console.log($.tmpl( el1, dataList))
 			return $.tmpl( el1, dataList);
 		}
 
